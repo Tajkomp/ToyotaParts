@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Toyota Parts Store — Оригинальные запчасти</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
@@ -16,18 +16,286 @@
             --white: #ffffff;
         }
 
-        /* --- НОВЫЕ СОВРЕМЕННЫЕ СТИЛИ ИКОНОК --- */
-        #contactsModal .modal-content {
-            position: absolute;
-            top: -100%; 
-            left: 50%;
-            transform: translate(-50%, 0);
-            transition: top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Убирает синее выделение при клике на iOS */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background-color: var(--wet-asphalt);
+            overflow-x: hidden;
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            background: var(--dark-asphalt);
+            padding: 1rem 5%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #444;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--toyota-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        nav { 
+            display: flex; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 10px;
+            justify-content: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        nav a:hover { color: var(--toyota-red); }
+
+        .auth-btn {
+            background: var(--toyota-red);
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: linear-gradient(rgba(30,32,33,0.8), rgba(42,45,46,0.9)), 
+                        url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1470') no-repeat center center/cover;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
             text-align: center;
+            padding: 40px 20px;
+        }
+
+        .hero h1 { font-size: 2.2rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); line-height: 1.2; }
+        .hero p { font-size: 1rem; margin-bottom: 20px; opacity: 0.9; }
+
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+            font-size: 1rem;
+            min-width: 0;
+        }
+
+        .search-container button {
+            padding: 12px 20px;
+            background: var(--toyota-red);
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        /* --- MODALS --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* --- PRODUCT GRID & CARDS --- */
+        .container { padding: 40px 5%; }
+        .section-title {
+            margin-bottom: 30px;
+            border-left: 6px solid var(--toyota-red);
+            padding-left: 15px;
+            font-size: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 380px;
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            background: #222;
+            border-radius: 8px;
+        }
+
+        .card h3 { font-size: 1rem; margin-bottom: 8px; height: 3rem; overflow: hidden; }
+        .price { font-size: 1.3rem; font-weight: bold; color: var(--white); margin-bottom: 10px; }
+
+        .buy-controls { height: 50px; position: relative; }
+
+        .btn-buy {
+            width: 100%;
+            height: 100%;
+            background: var(--toyota-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .qty-control {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: #2a2d2e;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px;
+            border: 1px solid var(--toyota-red);
+        }
+
+        .qty-btn {
+            width: 50px;
+            height: 100%;
+            background: var(--toyota-red);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.5rem;
+        }
+
+        /* --- FLOATING BUTTONS --- */
+        #cartToggleBtn, #adminAddBtn {
+            position: fixed;
+            bottom: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        #cartToggleBtn { right: 20px; background: var(--toyota-red); }
+        #adminAddBtn { left: 20px; background: var(--toyota-red); color: white; font-size: 30px; border: none; }
+
+        #cartCount {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: white;
+            color: var(--toyota-red);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            border: 1px solid var(--toyota-red);
+        }
+
+        /* --- MEDIA QUERIES (MOBILE) --- */
+        @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+
+        @media (max-width: 600px) {
+            header { padding: 1rem; justify-content: center; }
+            .logo { width: 100%; text-align: center; }
+            nav { width: 100%; justify-content: space-around; }
+            
+            .grid { grid-template-columns: 1fr; } /* Один товар в ряд для удобства клика */
+            .hero h1 { font-size: 1.8rem; }
+            
+            .modal-content { padding: 20px 15px; }
+            .product-view-img { height: 200px; }
+        }
+
+        /* --- CONTACTS MODAL ANIMATION --- */
+        #contactsModal .modal-content {
+            transition: transform 0.4s ease-out;
+            transform: translateY(-50px);
         }
         #contactsModal.active .modal-content {
-            top: 20%; 
+            transform: translateY(0);
         }
+
         .contact-social-icons {
             display: flex;
             justify-content: center;
@@ -45,376 +313,10 @@
             justify-content: center;
             border-radius: 50%;
             font-size: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             border: 1px solid #555;
         }
-        
-        .contact-social-icons a#linkInst:hover { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); transform: translateY(-5px); }
-        .contact-social-icons a#linkWa:hover { background: #25D366; transform: translateY(-5px); }
-        .contact-social-icons a#linkTg:hover { background: #0088cc; transform: translateY(-5px); }
 
-        .contact-info-block { margin: 10px 0; font-size: 1.1rem; }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: var(--text-light);
-            background-color: var(--wet-asphalt);
-        }
-
-        header {
-            background: var(--dark-asphalt);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #444;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--toyota-red);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        nav { display: flex; align-items: center; }
-        nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: var(--text-light);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        nav a:hover { color: var(--toyota-red); }
-
-        .auth-btn {
-            background: var(--toyota-red);
-            color: white !important;
-            padding: 8px 18px;
-            border-radius: 4px;
-            margin-left: 25px;
-            transition: opacity 0.3s;
-        }
-        .auth-btn:hover { opacity: 0.9; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 450px;
-            position: relative;
-            color: white;
-            border: 1px solid #555;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .close-modal {
-            position: absolute;
-            right: 20px;
-            top: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #888;
-        }
-
-        .product-view-content { max-width: 600px; text-align: center; }
-        .product-view-img {
-            max-width: 100%;
-            height: 250px;
-            object-fit: contain;
-            margin-bottom: 20px;
-            background: #222;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .product-view-desc {
-            text-align: left;
-            margin: 20px 0;
-            padding: 15px;
-            background: #2a2d2e;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            color: #ccc;
-            white-space: pre-line;
-        }
-
-        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #555; }
-        .auth-tabs button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-weight: bold;
-            color: #aaa;
-        }
-        .auth-tabs button.active {
-            border-bottom: 3px solid var(--toyota-red);
-            color: var(--toyota-red);
-        }
-
-        .auth-form input, .admin-form input, .admin-form textarea, .admin-form select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #555;
-            background: #222;
-            color: white;
-            border-radius: 4px;
-            font-family: inherit;
-        }
-
-        .auth-form .btn-submit, .btn-admin {
-            width: 100%;
-            padding: 12px;
-            background: var(--toyota-red);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .hero {
-            background: linear-gradient(rgba(30,32,33,0.8), rgba(42,45,46,0.9)), 
-                        url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1470') no-repeat center center/cover;
-            height: 450px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .hero h1 { font-size: 2.8rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-
-        .search-container {
-            width: 100%;
-            max-width: 650px;
-            display: flex;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .search-container input {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 4px 0 0 4px;
-            outline: none;
-            font-size: 1rem;
-            background: #fff;
-        }
-
-        .search-container button {
-            padding: 15px 30px;
-            background: var(--toyota-red);
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 0 4px 4px 0;
-            font-weight: bold;
-        }
-
-        .container { padding: 60px 5%; }
-        .section-title {
-            margin-bottom: 40px;
-            border-left: 6px solid var(--toyota-red);
-            padding-left: 20px;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-            .card { padding: 15px; }
-            .card img { height: 120px; }
-            .price { font-size: 1.1rem; }
-            .hero h1 { font-size: 2rem; }
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .card:hover { 
-            transform: translateY(-8px); 
-            border-color: var(--toyota-red);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.4);
-        }
-
-        .card h3 { 
-            color: white; 
-            margin: 10px 0; 
-            font-size: 0.95rem; 
-            font-weight: 500;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.8rem;
-        }
-
-        .card img {
-            max-width: 100%;
-            height: 140px;
-            object-fit: contain;
-            margin-bottom: 10px;
-            transition: transform 0.5s ease;
-        }
-        
-        .card:hover img { transform: scale(1.05); }
-
-        .price {
-            display: block;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--white);
-            margin: 10px 0;
-        }
-
-        .buy-controls { position: relative; height: 48px; margin-top: 10px; }
-
-        .btn-buy {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--toyota-red);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-buy:hover { background: #c20818; box-shadow: 0 4px 10px rgba(235, 10, 30, 0.3); }
-
-        .qty-control {
-            display: none;
-            width: 100%;
-            height: 100%;
-            background: #2a2d2e;
-            border-radius: 8px;
-            align-items: center;
-            justify-content: space-between;
-            padding: 4px;
-            border: 1px solid var(--toyota-red);
-        }
-
-        .qty-btn {
-            width: 40px;
-            height: 100%;
-            background: var(--toyota-red);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.4rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        
-        .qty-btn:hover { background: #ff1a2e; }
-        .qty-val { font-weight: bold; color: white; font-size: 1.2rem; }
-
-        .admin-actions { display: none; margin-top: 15px; gap: 8px; justify-content: center; }
-        .btn-edit, .btn-delete {
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
-            flex: 1;
-        }
-        .btn-edit { background: #2196F3; }
-        .btn-delete { background: #555; }
-
-        #adminAddBtn {
-            display: none;
-            position: fixed;
-            left: 30px;
-            bottom: 30px;
-            width: 60px;
-            height: 60px;
-            background: var(--toyota-red);
-            color: white;
-            border-radius: 50%;
-            border: none;
-            font-size: 30px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            z-index: 1500;
-            transition: transform 0.3s;
-        }
-        #adminAddBtn:hover { transform: scale(1.1); }
-
-        footer {
-            background: var(--dark-asphalt);
-            color: #777;
-            text-align: center;
-            padding: 3rem;
-            margin-top: 60px;
-            border-top: 1px solid #333;
-        }
-
-        /* --- ОБНОВЛЕННЫЙ АККОРДЕОН КАТАЛОГА --- */
+        /* --- SIDE CATALOG --- */
         .side-catalog {
             position: fixed;
             top: 0;
@@ -423,136 +325,18 @@
             height: 100%;
             background: var(--dark-asphalt);
             z-index: 3000;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.4s;
+            padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.5);
             border-right: 2px solid var(--toyota-red);
-            padding: 20px;
-            overflow-y: auto;
         }
         .side-catalog.open { left: 0; }
-
-        .catalog-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            z-index: 2500;
-        }
-
-        .side-catalog h2 {
-            color: var(--white);
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-        }
-
-        .catalog-group { margin-bottom: 5px; }
-
-        .catalog-item-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #2a2d2e;
-            border-radius: 4px;
-            margin-bottom: 2px;
-        }
-        
-        .catalog-item-parent {
-            flex-grow: 1;
-            padding: 12px 15px;
-            color: var(--white);
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .catalog-item-parent:hover { background: #3a3d3e; }
-        .catalog-item-parent i { transition: transform 0.3s; font-size: 0.8rem; }
-        .catalog-item-parent.active i { transform: rotate(180deg); }
-
-        .sub-catalog-list {
-            display: none;
-            padding-left: 15px;
-            border-left: 2px solid #444;
-            margin-left: 10px;
-            margin-bottom: 10px;
-        }
+        .sub-catalog-list { padding-left: 20px; display: none; }
         .sub-catalog-list.show { display: block; }
+        .catalog-item-parent { cursor: pointer; padding: 10px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+        .catalog-item { padding: 8px 0; color: #aaa; cursor: pointer; }
 
-        .catalog-item {
-            padding: 10px 15px;
-            background: transparent;
-            cursor: pointer;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .catalog-item:hover { color: var(--toyota-red); }
-
-        .btn-del-cat {
-            background: transparent;
-            color: #777;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            font-size: 1.2rem;
-        }
-        .btn-del-cat:hover { color: var(--toyota-red); }
-
-        /* -------------------------------------- */
-
-        .admin-nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .admin-nav-tabs button {
-            flex: 1;
-            padding: 8px;
-            background: #444;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .admin-nav-tabs button.active { background: var(--toyota-red); }
-
-        #cartToggleBtn {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            width: 60px;
-            height: 60px;
-            background: var(--toyota-red);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1001;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 2px solid #fff;
-        }
-        #cartCount {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #fff;
-            color: var(--toyota-red);
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-            border: 1px solid var(--toyota-red);
-        }
+        footer { padding: 2rem; background: var(--dark-asphalt); text-align: center; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -561,12 +345,16 @@
     <div class="logo">Toyota<span>Parts</span></div>
     <nav>
         <a href="#" id="catalogTrigger">Каталог</a>
-        <a href="#">Оплата</a>
-        <a href="#">Доставка</a>
         <a href="#" id="contactsTrigger">Контакты</a>
-        <a href="#" class="auth-btn" id="openAuth">Личный кабинет</a>
+        <a href="#" class="auth-btn" id="openAuth">Кабинет</a>
     </nav>
 </header>
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2500; display:none;"></div>
+<div class="side-catalog" id="sideCatalog">
+    <h2 style="margin-bottom: 20px;">Категории</h2>
+    <div id="catalogList"></div>
+</div>
 
 <div id="contactsModal" class="modal">
     <div class="modal-content">
@@ -574,19 +362,12 @@
         <h2 style="color: var(--toyota-red); margin-bottom: 20px;">Наши контакты</h2>
         <div id="displayAddress" class="contact-info-block">г. Душанбе, рынок Корвон</div>
         <div id="displayPhone1" class="contact-info-block">+992 978 117 811</div>
-        <div id="displayPhone2" class="contact-info-block">+992 900 000 000</div>
         <div class="contact-social-icons">
             <a href="#" id="linkInst" target="_blank"><i class="fab fa-instagram"></i></a>
             <a href="#" id="linkWa" target="_blank"><i class="fab fa-whatsapp"></i></a>
             <a href="#" id="linkTg" target="_blank"><i class="fab fa-telegram-plane"></i></a>
         </div>
     </div>
-</div>
-
-<div class="catalog-overlay" id="catalogOverlay"></div>
-<div class="side-catalog" id="sideCatalog">
-    <h2>Каталог запчастей</h2>
-    <div id="catalogList"></div>
 </div>
 
 <div id="authModal" class="modal">
@@ -599,37 +380,32 @@
         <form class="auth-form" id="loginForm">
             <input type="tel" id="phoneInput" value="+992 " required>
             <input type="password" id="passInput" placeholder="Пароль" required>
-            <button type="submit" class="btn-submit">Войти в кабинет</button>
+            <button type="submit" class="btn-submit">Войти</button>
         </form>
     </div>
 </div>
 
 <div id="productViewModal" class="modal">
-    <div class="modal-content product-view-content">
+    <div class="modal-content" style="text-align: center;">
         <span class="close-modal" id="closeProductView">&times;</span>
-        <h2 id="viewProdName" style="margin-bottom: 20px; color: var(--toyota-red);"></h2>
-        <img id="viewProdImg" src="" class="product-view-img">
-        <div id="viewProdDesc" class="product-view-desc"></div>
-        <div style="font-size: 1.8rem; font-weight: bold; color: var(--toyota-red); margin-bottom: 20px;" id="viewProdPrice"></div>
-        <button class="btn-buy" id="addToCartBtn" style="width: 100%;">Добавить в корзину</button>
+        <h2 id="viewProdName" style="margin-bottom: 20px; color: var(--toyota-red); font-size: 1.2rem;"></h2>
+        <img id="viewProdImg" src="" style="width:100%; height:200px; object-fit:contain; background:#222; border-radius:8px; margin-bottom:15px;">
+        <div id="viewProdDesc" style="text-align:left; font-size:0.9rem; margin-bottom:15px; color:#ccc;"></div>
+        <div id="viewProdPrice" style="font-size:1.5rem; font-weight:bold; margin-bottom:15px;"></div>
+        <button class="btn-buy" id="addToCartBtn">В корзину</button>
     </div>
 </div>
 
 <div id="cartModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
+    <div class="modal-content">
         <span class="close-modal" id="closeCart">&times;</span>
-        <h2 style="margin-bottom: 20px; color: var(--toyota-red);">Ваша корзина</h2>
-        <div id="cartItemsList" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div>
-        <div style="border-top: 1px solid #444; padding-top: 15px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold;">
-                <span>Итого:</span>
-                <span id="cartTotal">0 ₽</span>
-            </div>
-        </div>
-        <form id="orderForm" class="admin-form">
-            <input type="text" id="clientName" placeholder="Ваше имя" required>
-            <input type="tel" id="clientPhone" placeholder="Номер телефона" value="+992 " required>
-            <button type="submit" class="btn-buy" style="width: 100%; border: none; cursor: pointer;">Оформить заказ</button>
+        <h2 style="margin-bottom: 20px; color: var(--toyota-red);">Корзина</h2>
+        <div id="cartItemsList" style="margin-bottom: 20px; max-height: 250px; overflow-y: auto;"></div>
+        <div style="font-weight: bold; text-align: right; margin-bottom: 15px;">Итого: <span id="cartTotal">0 ₽</span></div>
+        <form id="orderForm">
+            <input type="text" id="clientName" placeholder="Имя" style="width:100%; padding:10px; margin-bottom:10px; background:#222; border:1px solid #555; color:white;" required>
+            <input type="tel" id="clientPhone" value="+992 " style="width:100%; padding:10px; margin-bottom:10px; background:#222; border:1px solid #555; color:white;" required>
+            <button type="submit" class="btn-buy">Оформить заказ</button>
         </form>
     </div>
 </div>
@@ -638,43 +414,23 @@
     <div class="modal-content">
         <span class="close-modal" id="closeAdmin">&times;</span>
         <div class="admin-nav-tabs">
-            <button id="btnTabProduct" class="active">Товар</button>
+            <button id="btnTabProduct" class="active">Товары</button>
             <button id="btnTabCatalog">Каталоги</button>
-            <button id="btnTabContacts">Контакты</button>
         </div>
-
         <div id="sectionAdminProduct">
             <form class="admin-form" id="productForm">
-                <input type="text" id="prodName" placeholder="Название товара" required>
+                <input type="text" id="prodName" placeholder="Название" required>
                 <input type="text" id="prodPrice" placeholder="Цена" required>
-                <textarea id="prodDesc" placeholder="Характеристики" rows="2"></textarea>
-                <select id="prodCatSelect" required>
-                    <option value="">Выберите каталог</option>
-                </select>
-                <input type="file" id="prodImg" accept="image/*">
-                <button type="submit" class="btn-admin" id="btnSubmitProduct">Добавить товар</button>
+                <textarea id="prodDesc" placeholder="Описание" rows="3" style="width:100%; background:#222; border:1px solid #555; color:white; padding:10px; margin-bottom:10px;"></textarea>
+                <select id="prodCatSelect" required style="width:100%; padding:10px; margin-bottom:10px; background:#222; color:white;"></select>
+                <button type="submit" class="btn-admin">Добавить товар</button>
             </form>
         </div>
-
         <div id="sectionAdminCatalog" style="display:none;">
-            <form class="admin-form" id="catalogForm">
-                <input type="text" id="newCatName" placeholder="Название категории" required>
-                <select id="parentCatSelect">
-                    <option value="none">Основная категория (нет родителя)</option>
-                </select>
-                <button type="submit" class="btn-admin">Создать каталог/подкаталог</button>
-            </form>
-        </div>
-
-        <div id="sectionAdminContacts" style="display:none;">
-            <form class="admin-form" id="contactsAdminForm">
-                <input type="text" id="admAddr" placeholder="Адрес">
-                <input type="text" id="admPh1" placeholder="Телефон 1">
-                <input type="text" id="admPh2" placeholder="Телефон 2">
-                <input type="text" id="admInst" placeholder="Ссылка Instagram">
-                <input type="text" id="admWa" placeholder="Ссылка WhatsApp">
-                <input type="text" id="admTg" placeholder="Ссылка Telegram">
-                <button type="submit" class="btn-admin">Сохранить контакты</button>
+            <form id="catalogForm">
+                <input type="text" id="newCatName" placeholder="Новая категория" style="width:100%; padding:10px; margin-bottom:10px; background:#222; border:1px solid #555; color:white;" required>
+                <select id="parentCatSelect" style="width:100%; padding:10px; margin-bottom:10px; background:#222; color:white;"></select>
+                <button type="submit" class="btn-admin">Создать категорию</button>
             </form>
         </div>
     </div>
@@ -683,21 +439,21 @@
 <button id="adminAddBtn">+</button>
 
 <div id="cartToggleBtn">
-    <span style="font-size: 24px;">🛒</span>
+    <span>🛒</span>
     <span id="cartCount">0</span>
 </div>
 
 <section class="hero">
     <h1>Оригинальные запчасти Toyota</h1>
-    <p>Надежность вашего автомобиля начинается с качественных деталей</p><br>
+    <p>Качество, проверенное временем. Доставка по Таджикистану.</p>
     <div class="search-container">
-        <input type="text" placeholder="Введите название или артикул детали...">
+        <input type="text" placeholder="Поиск по названию...">
         <button>Найти</button>
     </div>
 </section>
 
-<div class="container" id="mainContainer">
-    <h2 class="section-title" id="viewTitle">Наши товары</h2>
+<div class="container">
+    <h2 class="section-title" id="viewTitle">Популярные товары</h2>
     <div class="grid" id="productGrid"></div>
 </div>
 
@@ -713,128 +469,31 @@
             { id: "c3", name: "Ходовая", parent: "none" }
         ],
         products: [
-            { id: 1, name: "Масло 5W-30", price: "4 500 ₽", catId: "c2", desc: "Оригинальное масло Toyota", img: "https://cdn-icons-png.flaticon.com/512/2933/2933831.png" }
+            { id: 1, name: "Масло 5W-30", price: "4 500 ₽", catId: "c2", desc: "Оригинальное масло Toyota для двигателей нового поколения.", img: "https://cdn-icons-png.flaticon.com/512/2933/2933831.png" }
         ],
         contacts: {
-            address: "г. Душанбе, рынок Корвон", ph1: "+992 978 117 811", ph2: "+992 900 000 000",
-            inst: "#", wa: "#", tg: "#"
+            address: "г. Душанбе, рынок Корвон", ph1: "+992 978 117 811", inst: "#", wa: "#", tg: "#"
         }
     };
 
     let isAdmin = false;
-    let editProductId = null;
     let cart = [];
 
-    const TELEGRAM_BOT_TOKEN = 'ВАШ_ТОКЕН';
-    const TELEGRAM_CHAT_ID = 'ВАШ_ID';
-
-    // Вход
+    // --- ЛОГИКА ВХОДА ---
     document.getElementById("loginForm").onsubmit = (e) => {
         e.preventDefault();
         const phone = document.getElementById("phoneInput").value.replace(/\s/g, '');
         const pass = document.getElementById("passInput").value;
         if (phone === "+992978117811" && pass === "1234") {
             isAdmin = true;
-            document.getElementById("adminAddBtn").style.display = "block";
-            renderProducts(); 
-            alert("Админ включен");
+            document.getElementById("adminAddBtn").style.display = "flex";
+            renderProducts();
+            alert("Вы вошли как администратор");
         }
         document.getElementById("authModal").style.display = "none";
     };
 
-    // Обновление контактов
-    function updateContactsUI() {
-        document.getElementById('displayAddress').innerText = data.contacts.address;
-        document.getElementById('displayPhone1').innerText = data.contacts.ph1;
-        document.getElementById('displayPhone2').innerText = data.contacts.ph2;
-    }
-
-    // --- ЛОГИКА КАТАЛОГА (АККОРДЕОН) ---
-    function renderCatalog() {
-        const list = document.getElementById("catalogList");
-        list.innerHTML = "";
-        
-        const parents = data.catalogs.filter(c => c.parent === "none");
-        
-        parents.forEach(parent => {
-            const group = document.createElement("div");
-            group.className = "catalog-group";
-
-            const container = document.createElement("div");
-            container.className = "catalog-item-container";
-
-            const parentEl = document.createElement("div");
-            parentEl.className = "catalog-item-parent";
-            const hasSubs = data.catalogs.some(s => s.parent === parent.id);
-            parentEl.innerHTML = `${parent.name} ${hasSubs ? '<i class="fas fa-chevron-down"></i>' : ''}`;
-            
-            // Клик по родителю
-            parentEl.onclick = () => {
-                if (hasSubs) {
-                    parentEl.classList.toggle('active');
-                    const subList = group.querySelector('.sub-catalog-list');
-                    subList.classList.toggle('show');
-                }
-                renderProducts(parent.id, true);
-                document.getElementById("viewTitle").innerText = parent.name;
-            };
-
-            container.appendChild(parentEl);
-
-            if(isAdmin) {
-                const delBtn = document.createElement("button");
-                delBtn.className = "btn-del-cat";
-                delBtn.innerHTML = "&times;";
-                delBtn.onclick = (e) => { e.stopPropagation(); deleteCatalog(parent.id); };
-                container.appendChild(delBtn);
-            }
-
-            group.appendChild(container);
-
-            // Отрисовка подкаталогов
-            const subList = document.createElement("div");
-            subList.className = "sub-catalog-list";
-            
-            const subs = data.catalogs.filter(c => c.parent === parent.id);
-            subs.forEach(sub => {
-                const subItem = document.createElement("div");
-                subItem.className = "catalog-item";
-                subItem.innerHTML = `<span>${sub.name}</span>`;
-                
-                subItem.onclick = (e) => {
-                    e.stopPropagation();
-                    renderProducts(sub.id, false);
-                    document.getElementById("viewTitle").innerText = sub.name;
-                    closeCatalog();
-                };
-
-                if(isAdmin) {
-                    const delSub = document.createElement("button");
-                    delSub.className = "btn-del-cat";
-                    delSub.innerHTML = "&times;";
-                    delSub.onclick = (e) => { e.stopPropagation(); deleteCatalog(sub.id); };
-                    subItem.appendChild(delSub);
-                }
-
-                subList.appendChild(subItem);
-            });
-
-            group.appendChild(subList);
-            list.appendChild(group);
-        });
-    }
-
-    function deleteCatalog(catId) {
-        if(!confirm("Удалить категорию и всё что в ней?")) return;
-        const toDelete = [catId, ...data.catalogs.filter(c => c.parent === catId).map(c => c.id)];
-        data.products = data.products.filter(p => !toDelete.includes(p.catId));
-        data.catalogs = data.catalogs.filter(c => !toDelete.includes(c.id));
-        updateSelects();
-        renderCatalog();
-        renderProducts();
-    }
-
-    // Рендеринг товаров
+    // --- ЛОГИКА ТОВАРОВ ---
     function renderProducts(catIdFilter = null, isParentFilter = false) {
         const grid = document.getElementById("productGrid");
         grid.innerHTML = "";
@@ -860,109 +519,150 @@
                 <h3>${p.name}</h3>
                 <span class="price">${p.price}</span>
                 <div class="buy-controls" onclick="event.stopPropagation()">
-                    <button class="btn-buy" onclick="addToCart(${p.id})" style="display:${isInCart ? 'none' : 'flex'}">Купить</button>
+                    <button class="btn-buy" onclick="addToCart(${p.id})" style="display:${isInCart ? 'none' : 'block'}">Купить</button>
                     <div class="qty-control" style="display:${isInCart ? 'flex' : 'none'}">
                         <button class="qty-btn" onclick="changeQty(${p.id}, -1)">-</button>
-                        <span class="qty-val">${isInCart ? cartItem.qty : 0}</span>
+                        <span style="font-size:1.2rem; color:white;">${isInCart ? cartItem.qty : 0}</span>
                         <button class="qty-btn" onclick="changeQty(${p.id}, 1)">+</button>
                     </div>
-                </div>
-                <div class="admin-actions" style="display:${isAdmin ? 'flex' : 'none'}">
-                    <button class="btn-edit" onclick="editProd(event, ${p.id})">Изменить</button>
-                    <button class="btn-delete" onclick="deleteProd(event, ${p.id})">Удалить</button>
                 </div>
             `;
             grid.appendChild(card);
         });
     }
 
-    function updateSelects() {
-        const prodSelect = document.getElementById("prodCatSelect");
-        const parentSelect = document.getElementById("parentCatSelect");
-        prodSelect.innerHTML = '<option value="">Выберите каталог</option>';
-        parentSelect.innerHTML = '<option value="none">Основная категория (нет родителя)</option>';
-        data.catalogs.forEach(cat => {
-            prodSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-            parentSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+    function openProductView(id) {
+        const p = data.products.find(item => item.id === id);
+        if (!p) return;
+        document.getElementById("viewProdName").innerText = p.name;
+        document.getElementById("viewProdImg").src = p.img;
+        document.getElementById("viewProdDesc").innerText = p.desc || "Описание отсутствует.";
+        document.getElementById("viewProdPrice").innerText = p.price;
+        document.getElementById("productViewModal").style.display = "block";
+        document.getElementById("addToCartBtn").onclick = () => {
+            addToCart(p.id);
+            document.getElementById("productViewModal").style.display = "none";
+        };
+    }
+
+    // --- КАТАЛОГ ---
+    function renderCatalog() {
+        const list = document.getElementById("catalogList");
+        list.innerHTML = "";
+        const parents = data.catalogs.filter(c => c.parent === "none");
+        parents.forEach(parent => {
+            const container = document.createElement("div");
+            const parentEl = document.createElement("div");
+            parentEl.className = "catalog-item-parent";
+            const subs = data.catalogs.filter(c => c.parent === parent.id);
+            parentEl.innerHTML = `${parent.name} ${subs.length ? '<i class="fas fa-chevron-down"></i>' : ''}`;
+            
+            parentEl.onclick = () => {
+                if(subs.length) {
+                    const sl = container.querySelector(".sub-catalog-list");
+                    sl.classList.toggle("show");
+                    parentEl.classList.toggle("active");
+                }
+                renderProducts(parent.id, true);
+                document.getElementById("viewTitle").innerText = parent.name;
+            };
+
+            const subList = document.createElement("div");
+            subList.className = "sub-catalog-list";
+            subs.forEach(sub => {
+                const subItem = document.createElement("div");
+                subItem.className = "catalog-item";
+                subItem.innerText = sub.name;
+                subItem.onclick = (e) => {
+                    e.stopPropagation();
+                    renderProducts(sub.id, false);
+                    document.getElementById("viewTitle").innerText = sub.name;
+                    closeCatalog();
+                };
+                subList.appendChild(subItem);
+            });
+
+            container.appendChild(parentEl);
+            container.appendChild(subList);
+            list.appendChild(container);
         });
     }
 
-    // События админки
-    document.getElementById("catalogForm").onsubmit = (e) => {
-        e.preventDefault();
-        const name = document.getElementById("newCatName").value;
-        const parent = document.getElementById("parentCatSelect").value;
-        data.catalogs.push({ id: "c" + Date.now(), name, parent });
-        updateSelects();
-        renderCatalog();
-        e.target.reset();
-    };
-
-    // Корзина и прочее
+    // --- КОРЗИНА ---
+    window.addToCart = (id) => changeQty(id, 1);
     window.changeQty = (productId, delta) => {
         const idx = cart.findIndex(i => i.id === productId);
         if (idx !== -1) {
             cart[idx].qty += delta;
             if (cart[idx].qty <= 0) cart.splice(idx, 1);
-            updateCartUI();
         } else if (delta > 0) {
             const p = data.products.find(i => i.id === productId);
             cart.push({...p, qty: 1});
-            updateCartUI();
         }
+        updateCartUI();
     };
 
-    window.addToCart = (id) => changeQty(id, 1);
     function updateCartUI() {
-        document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.qty, 0);
+        const count = cart.reduce((s, i) => s + i.qty, 0);
+        document.getElementById('cartCount').innerText = count;
+        const total = cart.reduce((s, i) => s + (parseInt(i.price.replace(/\s/g, '')) * i.qty), 0);
+        document.getElementById('cartTotal').innerText = total.toLocaleString() + " ₽";
+        
+        const list = document.getElementById("cartItemsList");
+        list.innerHTML = cart.length ? "" : "Корзина пуста";
+        cart.forEach(item => {
+            list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #444; padding-bottom:5px;">
+                <span>${item.name} (${item.qty})</span>
+                <span>${item.price}</span>
+            </div>`;
+        });
         renderProducts();
     }
 
-    // Модалки
-    document.getElementById('catalogTrigger').onclick = (e) => {
+    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+    function updateSelects() {
+        const p1 = document.getElementById("prodCatSelect");
+        const p2 = document.getElementById("parentCatSelect");
+        if(!p1) return;
+        p1.innerHTML = data.catalogs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        p2.innerHTML = '<option value="none">Нет (основная)</option>' + data.catalogs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    const closeCatalog = () => {
+        document.getElementById('sideCatalog').classList.remove('open');
+        document.getElementById('catalogOverlay').style.display = 'none';
+    };
+
+    document.getElementById("catalogTrigger").onclick = (e) => {
         e.preventDefault();
         renderCatalog();
         document.getElementById('sideCatalog').classList.add('open');
         document.getElementById('catalogOverlay').style.display = 'block';
     };
 
-    const closeCatalog = () => {
-        document.getElementById('sideCatalog').classList.remove('open');
-        document.getElementById('catalogOverlay').style.display = 'none';
+    document.getElementById("contactsTrigger").onclick = (e) => {
+        e.preventDefault();
+        const m = document.getElementById("contactsModal");
+        m.style.display = "block";
+        setTimeout(() => m.classList.add("active"), 10);
     };
-    document.getElementById('catalogOverlay').onclick = closeCatalog;
 
-    document.getElementById("openAuth").onclick = (e) => { 
-        e.preventDefault(); document.getElementById("authModal").style.display = "block"; 
-    };
+    document.getElementById("cartToggleBtn").onclick = () => document.getElementById("cartModal").style.display = "block";
+    document.getElementById("openAuth").onclick = (e) => { e.preventDefault(); document.getElementById("authModal").style.display = "block"; };
+    document.getElementById("adminAddBtn").onclick = () => { updateSelects(); document.getElementById("adminModal").style.display = "block"; };
 
     document.querySelectorAll(".close-modal").forEach(btn => {
         btn.onclick = () => {
-            document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-            document.getElementById('contactsModal').classList.remove('active');
+            document.querySelectorAll(".modal").forEach(m => {
+                m.style.display = "none";
+                m.classList.remove("active");
+            });
         };
     });
 
-    document.getElementById("adminAddBtn").onclick = () => {
-        document.getElementById("adminModal").style.display = "block";
-    };
-
-    // Tabs
-    document.getElementById("btnTabProduct").onclick = () => showAdminTab("sectionAdminProduct");
-    document.getElementById("btnTabCatalog").onclick = () => showAdminTab("sectionAdminCatalog");
-    document.getElementById("btnTabContacts").onclick = () => showAdminTab("sectionAdminContacts");
-
-    function showAdminTab(id) {
-        ["sectionAdminProduct", "sectionAdminCatalog", "sectionAdminContacts"].forEach(s => {
-            document.getElementById(s).style.display = s === id ? "block" : "none";
-        });
-    }
-
     // Инициализация
-    updateSelects();
     renderProducts();
-    updateContactsUI();
-
+    updateSelects();
 </script>
 </body>
 </html>
