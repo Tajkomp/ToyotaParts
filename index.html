@@ -1621,6 +1621,62 @@
             if(document.getElementById('clientPhone')) document.getElementById('clientPhone').value = currentUser.phone;
         }
     };
+// --- ФУНКЦИЯ УДАЛЕНИЯ АДМИНА (ТОЛЬКО ДЛЯ ГЛАВНОГО) ---
+async function removeAdmin(userId) {
+    // Проверка: является ли текущий пользователь ГЛАВНЫМ админом
+    if (!isMainAdmin) {
+        alert("Ошибка: Только главный администратор может удалять других админов!");
+        return;
+    }
+
+    if (confirm("Вы уверены, что хотите лишить этого пользователя прав администратора?")) {
+        const { error } = await supabaseClient
+            .from('profiles') // Предполагаем, что права хранятся в таблице profiles
+            .update({ role: 'client' }) // Меняем роль на обычного клиента
+            .eq('id', userId);
+
+        if (error) {
+            alert("Ошибка при удалении: " + error.message);
+        } else {
+            alert("Права администратора отозваны.");
+            loadClientsList(); // Обновляем список, чтобы увидеть изменения
+        }
+    }
+}
+
+// --- ОБНОВЛЕННЫЙ СПИСОК КЛИЕНТОВ (С КНОПКОЙ УДАЛЕНИЯ) ---
+function renderClients(clients) {
+    const container = document.getElementById("clientsListBody");
+    container.innerHTML = "";
+
+    clients.forEach(client => {
+        // Проверяем количество админов (для информации)
+        const adminCount = clients.filter(c => c.role === 'admin' || c.role === 'main_admin').length;
+        
+        const tr = document.createElement("tr");
+        
+        // Кнопка удаления появляется только если:
+        // 1. Мы зашли как главный админ
+        // 2. Мы смотрим на обычного админа (главный сам себя не удаляет)
+        let actionBtn = "";
+        if (isMainAdmin && client.role === 'admin') {
+            actionBtn = `<button onclick="removeAdmin('${client.id}')" class="btn-danger" style="padding:5px; margin:0;">Убрать админа</button>`;
+        } else if (client.role === 'main_admin') {
+            actionBtn = `<span style="color:var(--gold)">👑 Владелец</span>`;
+        } else {
+            actionBtn = `<span style="color:#777">Клиент</span>`;
+        }
+
+        tr.innerHTML = `
+            <td>${client.name}</td>
+            <td>${client.phone}</td>
+            <td>${client.address || '-'}</td>
+            <td>***</td>
+            <td>${actionBtn}</td>
+        `;
+        container.appendChild(tr);
+    });
+}
 </script>
 </body>
 </html>
