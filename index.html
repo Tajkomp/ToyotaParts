@@ -757,7 +757,7 @@
         <div style="border-top: 1px solid #444; padding-top: 15px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold;">
                 <span>Итого:</span>
-                <span id="cartTotal">0 ₽</span>
+                <span id="cartTotal">0 TJS</span>
             </div>
         </div>
         <form id="orderForm" class="admin-form">
@@ -1234,7 +1234,7 @@
         document.getElementById("viewProdName").innerText = p.name;
         document.getElementById("viewProdImg").src = p.img;
         document.getElementById("viewProdDesc").innerText = p.desc || "Описание отсутствует.";
-        document.getElementById("viewProdPrice").innerText = p.price;
+       document.getElementById("viewProdPrice").innerText = p.price + " TJS";
         document.getElementById("productViewModal").style.display = "block";
         document.getElementById("addToCartBtn").onclick = () => { addToCart(p.id); document.getElementById("productViewModal").style.display = "none"; };
     };
@@ -1268,7 +1268,7 @@
             card.innerHTML = `
                 <img src="${p.img}">
                 <h3>${p.name}</h3>
-                <span class="price">${p.price}</span>
+                <span class="price">${p.price} TJS</span>
                 <div class="buy-controls" onclick="event.stopPropagation()">
                     <button class="btn-buy" onclick="addToCart(${p.id})" style="display:${isInCart ? 'none' : 'flex'}">Купить</button>
                     <div class="qty-control" style="display:${isInCart ? 'flex' : 'none'}">
