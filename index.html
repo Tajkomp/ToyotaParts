@@ -911,8 +911,8 @@
     let editProductId = null;
     let cart = [];
 
-    const TELEGRAM_BOT_TOKEN = 'ВАШ_ТОКЕН_БОТА';
-    const TELEGRAM_CHAT_ID = 'ВАШ_CHAT_ID';
+    const TELEGRAM_BOT_TOKEN = '8681756976:AAHIRkRSGduktZCfUeChoABowJ6VH8cwVlg';
+    const TELEGRAM_CHAT_ID = '8506743201';
 
     // --- ПОДКЛЮЧЕНИЕ SUPABASE ---
     const SUPABASE_URL = 'https://porprnzgizjblkchyhsz.supabase.co'; 
@@ -1067,7 +1067,7 @@
             list.appendChild(itemEl);
         });
 
-        document.getElementById('cartTotal').innerText = totalSum.toLocaleString() + ' ₽';
+        document.getElementById('cartTotal').innerText = totalSum.toLocaleString() + ' TJS';
         if(cart.length === 0) list.innerHTML = '<p style="text-align:center; color:#888;">Корзина пуста</p>';
         renderProducts();
     }
