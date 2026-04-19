@@ -1647,6 +1647,22 @@ async function removeAdmin(userId) {
 // --- ОБНОВЛЕННЫЙ СПИСОК КЛИЕНТОВ (С КНОПКОЙ УДАЛЕНИЯ) ---
 function renderClients(clients) {
     const container = document.getElementById("clientsListBody");
+    // Внутри цикла, где создаются строки таблицы клиентов:
+let actionColumn = "";
+
+if (currentUser.phone === "+992978117811") {
+    // Если это запись другого админа, показываем кнопку удаления
+    if (client.role === 'admin') {
+        actionColumn = `<button onclick="removeAdminRights('${client.id}')" 
+            style="background:red; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">
+            Уволить админа
+        </button>`;
+    } else if (client.phone === "+992978117811") {
+        actionColumn = "<b>ГЛАВНЫЙ</b>";
+    } else {
+        actionColumn = "Пользователь";
+    }
+}
     container.innerHTML = "";
 
     clients.forEach(client => {
@@ -1676,6 +1692,38 @@ function renderClients(clients) {
         `;
         container.appendChild(tr);
     });
+}
+// --- ФУНКЦИЯ ДЛЯ ГЛАВНОГО АДМИНА (978117811) ---
+async function removeAdminRights(userId) {
+    // Жесткая проверка по номеру (на всякий случай)
+    if (currentUser.phone !== "+992978117811" && !isMainAdmin) {
+        alert("Доступ запрещен! Только Главный Админ может это делать.");
+        return;
+    }
+
+    if (confirm("Вы уверены, что хотите лишить этого человека прав администратора прямо сейчас?")) {
+        const { error } = await supabaseClient
+            .from('profiles') 
+            .update({ role: 'client' }) // Сбрасываем до обычного клиента
+            .eq('id', userId);
+
+        if (error) {
+            alert("Ошибка: " + error.message);
+        } else {
+            alert("Администратор успешно удален.");
+            location.reload(); // Перезагружаем, чтобы обновить права
+        }
+    }
+}
+
+// Дополнительная проверка лимита (макс 3 админа)
+async function checkAdminLimit() {
+    const { data: admins } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('role', 'admin');
+    
+    return admins.length; // Вернет количество текущих доп. админов
 }
 </script>
 </body>
