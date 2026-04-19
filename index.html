@@ -14,6 +14,7 @@
             --card-bg: #333638;
             --text-light: #e0e0e0;
             --white: #ffffff;
+            --gold: #ffd700;
         }
 
         /* --- СТИЛИ АНИМАЦИИ ПРИВЕТСТВИЯ --- */
@@ -73,7 +74,7 @@
             text-decoration: none;
             width: 50px;
             height: 50px;
-            background: #444; /* Фон круга */
+            background: #444; 
             color: white;
             display: flex;
             align-items: center;
@@ -574,6 +575,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .admin-nav-tabs button {
             flex: 1;
@@ -583,6 +585,7 @@
             border: none;
             cursor: pointer;
             border-radius: 4px;
+            min-width: 100px;
         }
         .admin-nav-tabs button.active { background: var(--toyota-red); }
 
@@ -619,6 +622,26 @@
             border: 1px solid var(--toyota-red);
         }
 
+        .client-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .client-list-table th, .client-list-table td {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left;
+        }
+        .client-list-table th { background: #222; color: var(--toyota-red); }
+        .subcat-box {
+            background: #222;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border: 1px dashed var(--toyota-red);
+        }
+
         @media (max-width: 600px) {
             header { flex-direction: column; padding: 10px; }
             nav { margin-top: 10px; flex-wrap: wrap; justify-content: center; gap: 10px; }
@@ -628,9 +651,12 @@
             .search-container { flex-direction: column; box-shadow: none; gap: 10px; }
             .search-container input { border-radius: 4px; width: 100%; }
             .search-container button { border-radius: 4px; width: 100%; }
-            .modal-content { width: 95%; padding: 20px; margin: 10% auto; }
+            .modal-content { width: 95%; padding: 20px; margin: 10% auto; max-width: 100%; }
             #cartToggleBtn, #adminAddBtn { right: 15px; bottom: 15px; width: 50px; height: 50px; }
         }
+
+        .crown-icon { color: var(--gold); margin-right: 5px; font-size: 1.2rem; }
+        .tariff-badge { display: inline-block; padding: 3px 8px; background: rgba(255, 215, 0, 0.2); border: 1px solid var(--gold); color: var(--gold); border-radius: 4px; font-size: 0.8rem; margin-top: 5px; }
 
     </style>
 </head>
@@ -743,12 +769,14 @@
 </div>
 
 <div id="adminModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 600px;">
         <span class="close-modal" id="closeAdmin">&times;</span>
-        <div class="admin-nav-tabs">
+        <div class="admin-nav-tabs" id="adminTabsList">
             <button id="btnTabProduct" class="active">Товар</button>
             <button id="btnTabCatalog">Каталоги</button>
             <button id="btnTabContacts">Контакты</button>
+            <button id="btnTabClients">Клиенты</button>
+            <button id="btnTabOrders">Заказы клиентов</button>
         </div>
 
         <div id="sectionAdminProduct">
@@ -766,12 +794,21 @@
 
         <div id="sectionAdminCatalog" style="display:none;">
             <form class="admin-form" id="catalogForm">
-                <input type="text" id="newCatName" placeholder="Название категории" required>
-                <select id="parentCatSelect">
-                    <option value="none">Основная категория (нет родителя)</option>
-                </select>
-                <button type="submit" class="btn-admin">Создать каталог/подкаталог</button>
+                <label style="color:var(--toyota-red)">Создать основной каталог:</label>
+                <input type="text" id="newCatName" placeholder="Название основного каталога" required>
+                <button type="submit" class="btn-admin">Создать основной каталог</button>
             </form>
+            <hr style="border:0; border-top:1px solid #444; margin:20px 0;">
+            <div id="subcatArea">
+                <label style="color:var(--toyota-red)">Добавить подкаталог в существующий:</label>
+                <select id="parentCatSelectAdmin" style="margin-top:10px;">
+                    <option value="none">Сначала выберите основной каталог</option>
+                </select>
+                <div id="subcatInputs" style="display:none;" class="subcat-box">
+                    <input type="text" id="newSubCatName" placeholder="Название подкаталога">
+                    <button type="button" class="btn-admin" onclick="createNewSubCatalog()">Добавить подкаталог</button>
+                </div>
+            </div>
         </div>
 
         <div id="sectionAdminContacts" style="display:none;">
@@ -787,6 +824,29 @@
                 <input type="text" id="admDelPrice" placeholder="Например: 20 TJS">
                 <button type="submit" class="btn-admin">Сохранить всё</button>
             </form>
+        </div>
+
+        <div id="sectionAdminClients" style="display:none;">
+            <h3 style="color:var(--toyota-red)">Список зарегистрированных клиентов</h3>
+            <div style="overflow-x:auto;">
+                <table class="client-list-table" id="clientsTable">
+                    <thead>
+                        <tr>
+                            <th>Имя</th>
+                            <th>Телефон</th>
+                            <th>Адрес</th>
+                            <th>Пароль</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsListBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="sectionAdminOrders" style="display:none;">
+            <h3 style="color:var(--toyota-red)">Список заказов</h3>
+            <div id="ordersListBodyAdmin"></div>
         </div>
     </div>
 </div>
@@ -816,6 +876,16 @@
     <p>&copy; 2026 Toyota Parts Tajikistan. Все права защищены.</p>
 </footer>
 
+<style>
+    .profile-info { padding: 15px; background: #222; border-radius: 8px; margin-bottom: 20px; }
+    .profile-info p { margin-bottom: 8px; font-size: 0.9rem; color: #aaa; }
+    .profile-info span { color: #fff; font-weight: bold; }
+    .btn-danger { background: #444; color: #ff4d4d; border: 1px solid #444; margin-top: 10px; cursor: pointer; padding: 10px; width: 100%; border-radius: 4px; }
+    .btn-danger:hover { background: #555; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
     // --- Данные ---
     let data = {
@@ -824,9 +894,7 @@
             { id: "c2", name: "Масла", parent: "c1" },
             { id: "c3", name: "Ходовая", parent: "none" }
         ],
-        products: [
-            { id: 1, name: "Масло 5W-30", price: "4 500 ₽", catId: "c2", desc: "Оригинальное синтетическое масло Toyota.\nОбъем: 4л\nВязкость: 5W-30\nАртикул: 08880-10705", img: "https://cdn-icons-png.flaticon.com/512/2933/2933831.png" }
-        ],
+        products: [], // Загружаем из Supabase
         contacts: {
             address: "г. Душанбе, рынок Корвон",
             ph1: "+992 978 117 811",
@@ -839,12 +907,94 @@
     };
 
     let isAdmin = false;
+    let isMainAdmin = false;
     let editProductId = null;
     let cart = [];
 
     const TELEGRAM_BOT_TOKEN = 'ВАШ_ТОКЕН_БОТА';
     const TELEGRAM_CHAT_ID = 'ВАШ_CHAT_ID';
 
+    // --- ПОДКЛЮЧЕНИЕ SUPABASE ---
+    const SUPABASE_URL = 'https://porprnzgizjblkchyhsz.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_X9K4WS3xX_6SfALOWB1uMQ_pdzZIK8j';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = JSON.parse(localStorage.getItem('toyota_user')) || null;
+    const authModalContent = document.querySelector('#authModal .modal-content');
+
+    // --- ФУНКЦИЯ ЗАГРУЗКИ ТОВАРОВ ИЗ БАЗЫ ---
+    async function loadProductsFromDB() {
+        const { data: dbProducts, error } = await supabaseClient
+            .from('products')
+            .select('*');
+        
+        if (error) {
+            console.error("Ошибка загрузки:", error);
+        } else {
+            data.products = dbProducts || [];
+            renderProducts(); 
+        }
+    }
+
+    // --- СОХРАНЕНИЕ / ОБНОВЛЕНИЕ ТОВАРА ---
+    const productForm = document.getElementById("productForm");
+    let tempImg = "";
+
+    document.getElementById("prodImg").onchange = function(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => tempImg = ev.target.result;
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    productForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("prodName").value;
+        const price = document.getElementById("prodPrice").value;
+        const catId = document.getElementById("prodCatSelect").value;
+        const desc = document.getElementById("prodDesc").value;
+        const img = tempImg || "https://cdn-icons-png.flaticon.com/512/2933/2933831.png";
+
+        if (editProductId) {
+            const { error } = await supabaseClient
+                .from('products')
+                .update({ name, price, catId, desc, img })
+                .eq('id', editProductId);
+            
+            if (error) alert("Ошибка обновления: " + error.message);
+            editProductId = null;
+            document.getElementById("btnSubmitProduct").innerText = "Добавить товар";
+        } else {
+            const { error } = await supabaseClient
+                .from('products')
+                .insert([{ name, price, catId, desc, img }]);
+            
+            if (error) alert("Ошибка сохранения: " + error.message);
+        }
+
+        productForm.reset();
+        tempImg = "";
+        document.getElementById("adminModal").style.display = "none";
+        await loadProductsFromDB();
+    };
+
+    // --- УДАЛЕНИЕ ТОВАРА ---
+    window.deleteProd = async (e, id) => {
+        e.stopPropagation(); 
+        if(confirm("Удалить этот товар навсегда?")) {
+            const { error } = await supabaseClient
+                .from('products')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                alert("Ошибка удаления: " + error.message);
+            } else {
+                await loadProductsFromDB();
+            }
+        }
+    };
+
+    // --- ФУНКЦИИ ИНТЕРФЕЙСА ---
     function updateContactsUI() {
         document.getElementById('displayAddress').innerText = data.contacts.address;
         document.getElementById('displayPhone1').innerText = data.contacts.ph1;
@@ -946,47 +1096,113 @@
         const name = document.getElementById('clientName').value;
         const phone = document.getElementById('clientPhone').value;
         const total = document.getElementById('cartTotal').innerText;
-        let message = `🚀 **Новый заказ!**\n\n👤 Клиент: ${name}\n📞 Телефон: ${phone}\n──────────────────\n`;
-        cart.forEach((item, i) => message += `${i+1}. ${item.name} (${item.qty} шт) — ${item.price}\n`);
-        message += `──────────────────\n💰 **Итого: ${total}**`;
+        
+        const orderData = {
+            client_name: name,
+            client_phone: phone,
+            total_price: total,
+            items: cart.map(item => `${item.name} (${item.qty} шт)`).join(', '),
+            status: 'В процессе'
+        };
 
         try {
+            const { error: dbErr } = await supabaseClient.from('orders').insert([orderData]);
+            if(dbErr) throw dbErr;
+
+            let message = `🚀 **Новый заказ!**\n\n👤 Клиент: ${name}\n📞 Телефон: ${phone}\n──────────────────\n`;
+            cart.forEach((item, i) => message += `${i+1}. ${item.name} (${item.qty} шт) — ${item.price}\n`);
+            message += `──────────────────\n💰 **Итого: ${total}**\nСтатус: В процессе`;
+
             const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'Markdown' })
             });
             if(response.ok) {
-                alert("Заказ отправлен! Мы свяжемся с вами.");
+                alert("Заказ оформлен! Статус: В процессе.");
                 cart = [];
                 updateCartUI();
                 document.getElementById('cartModal').style.display = 'none';
                 document.getElementById('orderForm').reset();
             } else { alert("Ошибка отправки."); }
-        } catch(e) { alert("Ошибка сети"); }
+        } catch(e) { alert("Ошибка оформления: " + e.message); }
     };
 
     const hideAllAdminSections = () => {
         document.getElementById("sectionAdminProduct").style.display = "none";
         document.getElementById("sectionAdminCatalog").style.display = "none";
         document.getElementById("sectionAdminContacts").style.display = "none";
-        document.getElementById("btnTabProduct").classList.remove("active");
-        document.getElementById("btnTabCatalog").classList.remove("active");
-        document.getElementById("btnTabContacts").classList.remove("active");
+        document.getElementById("sectionAdminClients").style.display = "none";
+        document.getElementById("sectionAdminOrders").style.display = "none";
+        document.querySelectorAll(".admin-nav-tabs button").forEach(b => b.classList.remove("active"));
     };
 
     document.getElementById("btnTabProduct").onclick = function() { hideAllAdminSections(); this.classList.add("active"); document.getElementById("sectionAdminProduct").style.display = "block"; };
     document.getElementById("btnTabCatalog").onclick = function() { hideAllAdminSections(); this.classList.add("active"); document.getElementById("sectionAdminCatalog").style.display = "block"; };
     document.getElementById("btnTabContacts").onclick = function() { hideAllAdminSections(); this.classList.add("active"); document.getElementById("sectionAdminContacts").style.display = "block"; };
+    document.getElementById("btnTabClients").onclick = function() { hideAllAdminSections(); this.classList.add("active"); document.getElementById("sectionAdminClients").style.display = "block"; fetchClients(); };
+    document.getElementById("btnTabOrders").onclick = function() { hideAllAdminSections(); this.classList.add("active"); document.getElementById("sectionAdminOrders").style.display = "block"; fetchOrdersAdmin(); };
+
+    async function fetchOrdersAdmin() {
+        const { data: orders, error } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
+        if(error) return alert("Ошибка заказов");
+        const list = document.getElementById("ordersListBodyAdmin");
+        list.innerHTML = "";
+        orders.forEach(o => {
+            const div = document.createElement("div");
+            div.className = "profile-info";
+            div.style.border = "1px solid #444";
+            div.innerHTML = `
+                <p>Заказ №${o.id} | Клиент: <span>${o.client_name}</span></p>
+                <p>Товары: ${o.items}</p>
+                <p>Сумма: ${o.total_price} | Статус: <b>${o.status}</b></p>
+                ${o.courier ? `<p>Курьер: ${o.courier}</p>` : ''}
+                <select onchange="updateOrderStatusAdmin(${o.id}, this.value, '${o.client_name}', '${o.items}')">
+                    <option value="">Сменить статус...</option>
+                    <option value="В процессе">В процессе</option>
+                    <option value="Принято">Принято</option>
+                    <option value="Отправлено">Отправлено (ввести курьера)</option>
+                </select>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    window.updateOrderStatusAdmin = async (id, status, clientName, items) => {
+        if(!status) return;
+        let courier = "";
+        if(status === "Отправлено") {
+            courier = prompt("Введите номер или имя курьера:");
+            if(!courier) return;
+        }
+        const { error } = await supabaseClient.from('orders').update({ status, courier }).eq('id', id);
+        if(!error) fetchOrdersAdmin();
+    };
 
     const catalogForm = document.getElementById("catalogForm");
     catalogForm.onsubmit = (e) => {
         e.preventDefault();
         const name = document.getElementById("newCatName").value;
-        const parent = document.getElementById("parentCatSelect").value;
         const id = "c" + Date.now();
-        data.catalogs.push({ id, name, parent });
+        data.catalogs.push({ id, name, parent: "none" });
         updateSelects(); renderCatalog(); catalogForm.reset();
+        alert("Основной каталог создан!");
+    };
+
+    document.getElementById("parentCatSelectAdmin").onchange = function() {
+        const val = this.value;
+        document.getElementById("subcatInputs").style.display = (val !== "none") ? "block" : "none";
+    };
+
+    window.createNewSubCatalog = () => {
+        const parentId = document.getElementById("parentCatSelectAdmin").value;
+        const name = document.getElementById("newSubCatName").value;
+        if(!name) return alert("Введите название подкаталога");
+        const id = "sc" + Date.now();
+        data.catalogs.push({ id, name, parent: parentId });
+        document.getElementById("newSubCatName").value = "";
+        updateSelects(); renderCatalog();
+        alert("Подкаталог добавлен!");
     };
 
     window.deleteCatalog = (e, catId) => {
@@ -1001,43 +1217,16 @@
 
     function updateSelects() {
         const prodSelect = document.getElementById("prodCatSelect");
-        const parentSelect = document.getElementById("parentCatSelect");
+        const parentSelectAdmin = document.getElementById("parentCatSelectAdmin");
         prodSelect.innerHTML = '<option value="">Выберите каталог</option>';
-        parentSelect.innerHTML = '<option value="none">Основная категория (нет родителя)</option>';
+        parentSelectAdmin.innerHTML = '<option value="none">Сначала выберите основной каталог</option>';
         data.catalogs.forEach(cat => {
             prodSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-            if (cat.parent === "none") { parentSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`; }
+            if (cat.parent === "none") {
+                parentSelectAdmin.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+            }
         });
     }
-
-    const productForm = document.getElementById("productForm");
-    let tempImg = "";
-    document.getElementById("prodImg").onchange = function(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => tempImg = ev.target.result;
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    productForm.onsubmit = (e) => {
-        e.preventDefault();
-        const name = document.getElementById("prodName").value;
-        const price = document.getElementById("prodPrice").value;
-        const catId = document.getElementById("prodCatSelect").value;
-        const desc = document.getElementById("prodDesc").value;
-        if (editProductId) {
-            const idx = data.products.findIndex(p => p.id === editProductId);
-            if (idx !== -1) {
-                data.products[idx].name = name; data.products[idx].price = price;
-                data.products[idx].catId = catId; data.products[idx].desc = desc;
-                if (tempImg) data.products[idx].img = tempImg;
-            }
-            editProductId = null; document.getElementById("btnSubmitProduct").innerText = "Добавить товар";
-        } else {
-            const img = tempImg || "https://cdn-icons-png.flaticon.com/512/2933/2933831.png";
-            data.products.push({ id: Date.now(), name, price, catId, desc, img: img });
-        }
-        renderProducts(); document.getElementById("adminModal").style.display = "none"; productForm.reset(); tempImg = "";
-    };
 
     window.openProductView = (id) => {
         const p = data.products.find(item => item.id === id);
@@ -1062,8 +1251,6 @@
         document.getElementById("btnSubmitProduct").innerText = "Сохранить изменения";
         document.getElementById("adminModal").style.display = "block";
     };
-
-    window.deleteProd = (e, id) => { e.stopPropagation(); if(confirm("Удалить?")) { data.products = data.products.filter(p => p.id !== id); renderProducts(); } };
 
     function renderProducts(catIdFilter = null, isParentFilter = false) {
         const grid = document.getElementById("productGrid");
@@ -1152,37 +1339,12 @@
     document.getElementById('catalogTrigger').onclick = (e) => { e.preventDefault(); renderCatalog(); document.getElementById('sideCatalog').classList.add('open'); document.getElementById('catalogOverlay').style.display = 'block'; };
     document.getElementById('catalogOverlay').onclick = closeCatalog;
 
-    updateSelects(); renderProducts(); renderCatalog(); updateContactsUI(); 
-
-</script>
-
-<style>
-    .profile-info { padding: 15px; background: #222; border-radius: 8px; margin-bottom: 20px; }
-    .profile-info p { margin-bottom: 8px; font-size: 0.9rem; color: #aaa; }
-    .profile-info span { color: #fff; font-weight: bold; }
-    .btn-danger { background: #444; color: #ff4d4d; border: 1px solid #444; margin-top: 10px; cursor: pointer; padding: 10px; width: 100%; border-radius: 4px; }
-    .btn-danger:hover { background: #555; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-    const SUPABASE_URL = 'https://porprnzgizjblkchyhsz.supabase.co'; 
-    const SUPABASE_KEY = 'sb_publishable_X9K4WS3xX_6SfALOWB1uMQ_pdzZIK8j';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let currentUser = JSON.parse(localStorage.getItem('toyota_user')) || null;
-    const authModalContent = document.querySelector('#authModal .modal-content');
-
-    // ФУНКЦИЯ ДЛЯ ПОКАЗА АНИМАЦИИ
     function playWelcomeAnimation(name, isReturning = false) {
         const overlay = document.getElementById('welcomeOverlay');
         const title = document.getElementById('welcomeTitle');
         const msg = document.getElementById('welcomeMessage');
-        
         title.innerText = isReturning ? `С возвращением, ${name}!` : `Добро пожаловать, ${name}!`;
         msg.innerText = isReturning ? "Рады видеть вас снова." : "Спасибо, что выбрали нас!";
-        
         overlay.style.display = 'flex';
         setTimeout(() => {
             overlay.style.animation = 'fadeIn 0.5s ease-out reverse';
@@ -1193,13 +1355,38 @@
         }, 3000);
     }
 
-    // ОБНОВЛЕНИЕ КНОПКИ ВХОДА
     function updateAuthBtn() {
         const btn = document.getElementById('openAuth');
+        checkTemporaryAdmins();
         if (currentUser) {
             btn.innerText = currentUser.name;
         } else {
             btn.innerText = "Вход/Регистрация";
+        }
+    }
+
+    function checkTemporaryAdmins() {
+        const tempAdmins = JSON.parse(localStorage.getItem('toyota_temp_admins')) || [];
+        const now = Date.now();
+        const updatedAdmins = tempAdmins.filter(admin => admin.expiry > now);
+        
+        // Если срок истек у текущего пользователя
+        if (currentUser && tempAdmins.some(a => a.phone === currentUser.phone && a.expiry <= now)) {
+             alert("Ваш срок действия админ-панели истек.");
+        }
+
+        localStorage.setItem('toyota_temp_admins', JSON.stringify(updatedAdmins));
+        
+        if (currentUser) {
+            const adminData = updatedAdmins.find(a => a.phone === currentUser.phone);
+            if (adminData) {
+                isAdmin = true;
+                currentUser.tariff = adminData.tariff;
+                currentUser.expiry = adminData.expiry;
+                document.getElementById("adminAddBtn").style.display = "block";
+                // Скрываем список клиентов для 2-го админа
+                document.getElementById("btnTabClients").style.display = "none";
+            }
         }
     }
 
@@ -1245,8 +1432,9 @@
                 const pass = document.getElementById('loginPass').value;
                 if (phone.replace(/\s/g, '') === "+992978117811" && pass === "1234") {
                     isAdmin = true;
+                    isMainAdmin = true;
                     document.getElementById("adminAddBtn").style.display = "block";
-                    renderProducts(); alert("Админ включен");
+                    renderProducts(); alert("Главный админ включен");
                     document.getElementById("authModal").style.display = "none";
                     return;
                 }
@@ -1291,15 +1479,40 @@
         }
     }
 
-    function showCabinet() {
+    async function showCabinet() {
+        const { data: orders } = await supabaseClient.from('orders').select('*').eq('client_phone', currentUser.phone).order('id', {ascending: false});
+        
+        let crownHtml = "";
+        if(currentUser.tariff && isAdmin && !isMainAdmin) {
+            crownHtml = `
+                <div style="text-align:center; margin-bottom:15px;">
+                    <i class="fas fa-crown crown-icon"></i>
+                    <div class="tariff-badge">Ваш тариф "${currentUser.tariff}" до ${new Date(currentUser.expiry).toLocaleDateString()}</div>
+                </div>
+            `;
+        }
+
         authModalContent.innerHTML = `
             <span class="close-modal" onclick="document.getElementById('authModal').style.display='none'">&times;</span>
+            ${crownHtml}
             <h2 style="color:var(--toyota-red); margin-bottom:20px;">Личный кабинет</h2>
             <div class="profile-info">
                 <p>Имя: <span>${currentUser.name}</span></p>
                 <p>Телефон: <span>${currentUser.phone}</span></p>
                 <p>Адрес: <span>${currentUser.address}</span></p>
             </div>
+            
+            <h3 style="color:var(--toyota-red)">История заказов</h3>
+            <div id="userOrdersList" style="margin-bottom:20px; max-height:200px; overflow-y:auto;">
+                ${orders && orders.length > 0 ? orders.map(o => `
+                    <div class="profile-info" style="font-size:0.8rem;">
+                        <p>Заказ №${o.id} | Статус: <b>${o.status}</b></p>
+                        <p>${o.items}</p>
+                        ${o.status === 'Отправлено' ? `<button class="btn-admin" onclick="clientReceived(${o.id}, '${currentUser.name}', '${o.items}')">ПОЛУЧИЛ</button>` : ''}
+                    </div>
+                `).join('') : '<p>Заказов нет</p>'}
+            </div>
+
             <form class="admin-form" id="updateProfileForm">
                 <input type="text" id="updName" placeholder="Новое имя" value="${currentUser.name}">
                 <input type="text" id="updAddr" placeholder="Новый адрес" value="${currentUser.address}">
@@ -1310,7 +1523,6 @@
             <button class="btn-danger" onclick="deleteAccount()">Удалить аккаунт</button>
             <button class="btn-submit" style="margin-top:10px; background:#555;" onclick="logout()">Выйти</button>
         `;
-
         document.getElementById('updateProfileForm').onsubmit = async (e) => {
             e.preventDefault();
             if (document.getElementById('oldPass').value !== currentUser.password) return alert("Пароль неверный!");
@@ -1324,7 +1536,64 @@
         };
     }
 
-    window.logout = () => { currentUser = null; localStorage.removeItem('toyota_user'); updateAuthBtn(); renderAuthUI('login'); };
+    window.clientReceived = async (id, name, items) => {
+        const { error } = await supabaseClient.from('orders').update({ status: 'Получено' }).eq('id', id);
+        if(!error) {
+            alert(`Спасибо за заказ, ${name}!`);
+            const msg = `✅ Заказ ПОЛУЧЕН!\n👤 Клиент: ${name}\n📦 Товар: ${items}\nСтатус: Получил`;
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg })
+            });
+            showCabinet();
+        }
+    };
+
+    async function fetchClients() {
+        const { data: users, error } = await supabaseClient.from('users').select('*');
+        if (error) return alert("Ошибка загрузки клиентов");
+        const listBody = document.getElementById("clientsListBody");
+        listBody.innerHTML = "";
+        users.forEach(u => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${u.name}</td>
+                <td>${u.phone}</td>
+                <td>${u.address}</td>
+                <td><span style="filter:blur(4px)" onclick="this.style.filter='none'">${u.password}</span></td>
+                <td>
+                    <button class="btn-admin" style="padding:4px 8px; font-size:0.7rem;" onclick="makeAdmin('${u.phone}', '${u.name}')">Назначить админом</button>
+                </td>
+            `;
+            listBody.appendChild(row);
+        });
+    }
+
+    window.makeAdmin = (phone, name) => {
+        if(!isMainAdmin) return alert("Только главный админ может назначать админов!");
+        
+        const tariff = prompt("Выберите Тариф:\n1 - Стандарт (1 мес)\n2 - Plus (3 мес)\n3 - PRO (6 мес)\n4 - Business (1 год)", "1");
+        if(!tariff) return;
+        
+        let days = 30;
+        let tariffName = "Стандарт";
+        
+        if(tariff === "2") { days = 90; tariffName = "Plus"; }
+        else if(tariff === "3") { days = 180; tariffName = "PRO"; }
+        else if(tariff === "4") { days = 365; tariffName = "Business"; }
+        
+        const expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+        const tempAdmins = JSON.parse(localStorage.getItem('toyota_temp_admins')) || [];
+        
+        if(tempAdmins.length >= 2) return alert("Максимум 2 доп. админа!");
+        
+        tempAdmins.push({ phone, name, expiry, tariff: tariffName });
+        localStorage.setItem('toyota_temp_admins', JSON.stringify(tempAdmins));
+        alert(`${name} назначен админом. Тариф: ${tariffName}`);
+    }
+
+    window.logout = () => { currentUser = null; localStorage.removeItem('toyota_user'); isAdmin = false; isMainAdmin = false; document.getElementById("adminAddBtn").style.display = "none"; updateAuthBtn(); renderAuthUI('login'); };
     window.deleteAccount = async () => {
         if (confirm("Удалить?")) {
             await supabaseClient.from('users').delete().eq('id', currentUser.id);
@@ -1337,8 +1606,12 @@
         if (currentUser) showCabinet(); else renderAuthUI('login');
     };
 
-    // При загрузке страницы
+    // --- ЗАПУСК ПРИ ЗАГРУЗКЕ ---
+    loadProductsFromDB();
     updateAuthBtn();
+    updateSelects(); 
+    renderCatalog(); 
+    updateContactsUI();
 
     const originalUpdateCart = window.updateCartUI;
     window.updateCartUI = function() {
