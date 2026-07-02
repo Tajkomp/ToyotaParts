@@ -351,7 +351,8 @@ a{color:inherit; text-decoration:none;}
 
 <!-- FIREBASE SETUP GATE (показывается только пока не подключён Firebase) -->
 <div id="fbSetupScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1B1730,#3a1a63);align-items:center;justify-content:center;padding:24px;">
-  <div style="width:100%;max-width:380px;background:#1F1B33;border-radius:22px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+  <div style="width:100%;max-width:380px;background:#1F1B33;border-radius:22px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;">
+    <button id="fbSetupCloseBtn" style="display:none;position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;align-items:center;justify-content:center;"><i class="fa-solid fa-xmark"></i></button>
     <div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:#fff;margin-bottom:4px;"><i class="fa-solid fa-diamond" style="color:#E31C79;"></i> HORIZON MARKET</div>
     <div style="color:#a79fc2;font-size:12.5px;margin-bottom:20px;line-height:1.5;">Первый запуск: подключите свою базу данных Firebase. Эти данные будут сохранены в этом браузере навсегда и доступны для изменения только администратору.</div>
 
@@ -737,15 +738,23 @@ a{color:inherit; text-decoration:none;}
 <script>
 /* ============================================================
    FIREBASE SETUP GATE
-   Никаких чужих ключей Firebase в коде больше нет.
-   При первом запуске сайт просит пароль администратора,
-   затем даёт ввести данные своего проекта Firebase.
-   Введённые данные сохраняются в этом браузере навсегда
-   (localStorage) и подгружаются при каждом следующем визите.
-   Изменить или удалить их можно только через панель
-   администратора (вкладка «Доступ»), то есть только зная
-   пароль администратора.
+   ------------------------------------------------------------
+   HZ_EMBEDDED_CONFIG — если сюда (при развёртывании файла на
+   хостинге) вписаны данные Firebase, сайт запускается сразу для
+   ВСЕХ посетителей — никто не видит экран настройки и пароль
+   никто, кроме администратора, не вводит. По умолчанию — null.
+
+   Пока здесь null, при первом открытии сайт просит пароль
+   администратора и даёт ввести данные проекта Firebase.
+   Эти данные сохраняются в localStorage (работают сразу в этом
+   браузере для предпросмотра) И администратору предлагается
+   скачать готовый файл сайта с уже вписанными данными — этот
+   файл нужно загрузить на хостинг вместо старого, тогда сайт
+   заработает у всех клиентов без каких-либо паролей/экранов.
    ============================================================ */
+window.HZ_EMBEDDED_CONFIG = null;
+</script>
+<script>
 window.HZ = window.HZ || {};
 const FB_CFG_KEY = 'hz_firebase_config';
 const FB_BOOTSTRAP_PASSWORD = '12345'; // пароль для самой первой настройки Firebase (смените админ-пароль в Доступ после запуска)
@@ -756,43 +765,98 @@ function hzGetSavedFirebaseConfig(){
 function hzSaveFirebaseConfig(cfg){ localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfg)); }
 window.hzDeleteFirebaseConfig = function(){ localStorage.removeItem(FB_CFG_KEY); location.reload(); };
 
+/* Пытается скачать готовый HTML-файл сайта с вписанными данными Firebase
+   (заменяет "window.HZ_EMBEDDED_CONFIG = null;" на реальные данные).
+   Работает, когда сайт открыт через http/https (не просто двойным
+   кликом по файлу). Возвращает true при успехе. */
+async function hzDownloadConfiguredFile(cfg){
+  try{
+    const res = await fetch(location.href, {cache:'no-store'});
+    let text = await res.text();
+    const marker = 'window.HZ_EMBEDDED_CONFIG = null;';
+    if(!text.includes(marker)) return false;
+    text = text.replace(marker, 'window.HZ_EMBEDDED_CONFIG = ' + JSON.stringify(cfg) + ';');
+    const blob = new Blob([text], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'horizon-market.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    return true;
+  }catch(e){ console.warn('hzDownloadConfiguredFile failed', e); return false; }
+}
+
+function hzFillSetupFields(cfg){
+  document.getElementById('fbApiKey').value = cfg?.apiKey||'';
+  document.getElementById('fbAuthDomain').value = cfg?.authDomain||'';
+  document.getElementById('fbDbUrl').value = cfg?.databaseURL||'';
+  document.getElementById('fbProjectId').value = cfg?.projectId||'';
+  document.getElementById('fbStorageBucket').value = cfg?.storageBucket||'';
+  document.getElementById('fbMsgSenderId').value = cfg?.messagingSenderId||'';
+  document.getElementById('fbAppId').value = cfg?.appId||'';
+}
+
+/* Показывает экран настройки Firebase, сразу на шаге ввода данных
+   (используется из панели администратора, когда пароль уже проверен). */
+window.hzOpenFirebaseSetupForm = function(existingCfg){
+  document.getElementById('fbSetupScreen').style.display = 'flex';
+  document.getElementById('fbSetupStep1').style.display = 'none';
+  document.getElementById('fbSetupStep2').style.display = 'block';
+  document.getElementById('fbSetupCloseBtn').style.display = 'flex';
+  hzFillSetupFields(existingCfg||{});
+};
+document.getElementById('fbSetupCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('fbSetupScreen').style.display = 'none';
+});
+
+async function hzHandleSetupSave(){
+  const cfg = {
+    apiKey: document.getElementById('fbApiKey').value.trim(),
+    authDomain: document.getElementById('fbAuthDomain').value.trim(),
+    databaseURL: document.getElementById('fbDbUrl').value.trim(),
+    projectId: document.getElementById('fbProjectId').value.trim(),
+    storageBucket: document.getElementById('fbStorageBucket').value.trim(),
+    messagingSenderId: document.getElementById('fbMsgSenderId').value.trim(),
+    appId: document.getElementById('fbAppId').value.trim()
+  };
+  const err = document.getElementById('fbSetupErr2');
+  if(!cfg.apiKey || !cfg.projectId || !cfg.appId){ err.textContent = 'Заполните обязательные поля: apiKey, projectId, appId'; return; }
+  err.textContent = '';
+  hzSaveFirebaseConfig(cfg); // работает сразу в этом браузере (предпросмотр)
+  const btn = document.getElementById('fbSetupSaveBtn');
+  btn.disabled = true; btn.textContent = 'Готовим файл...';
+  const ok = await hzDownloadConfiguredFile(cfg);
+  btn.disabled = false;
+  if(ok){
+    alert('Файл сайта с вашими данными скачан на устройство.\n\nЗагрузите этот файл на ваш хостинг вместо старого — тогда сайт заработает у ВСЕХ клиентов сразу, без пароля и экрана настройки.\n\nСейчас откроется предпросмотр в этом браузере.');
+  } else {
+    alert('Не удалось автоматически подготовить файл (это нормально, если сайт открыт локально, а не через хостинг).\n\nЧтобы сайт заработал у всех клиентов, откройте файл сайта в текстовом редакторе, найдите строку:\nwindow.HZ_EMBEDDED_CONFIG = null;\n\nи замените её на:\nwindow.HZ_EMBEDDED_CONFIG = ' + JSON.stringify(cfg) + ';\n\nЗатем загрузите изменённый файл на хостинг. Сейчас откроется предпросмотр в этом браузере.');
+  }
+  location.reload();
+}
+
 function boot(){
-  const saved = hzGetSavedFirebaseConfig();
-  if(saved){
-    window.HZ.firebaseConfig = saved;
-    firebase.initializeApp(saved);
+  // 1) Локальные данные в этом браузере (например, админ только что их поменял) имеют приоритет.
+  // 2) Иначе — данные, вписанные в сам файл при развёртывании (работают у всех посетителей).
+  const cfg = hzGetSavedFirebaseConfig() || window.HZ_EMBEDDED_CONFIG;
+  if(cfg){
+    window.HZ.firebaseConfig = cfg;
+    firebase.initializeApp(cfg);
     startApp();
     return;
   }
-  // Первый запуск — данных Firebase ещё нет, показываем экран настройки
-  const screen = document.getElementById('fbSetupScreen');
-  screen.style.display = 'flex';
-  const step1 = document.getElementById('fbSetupStep1');
-  const step2 = document.getElementById('fbSetupStep2');
-  document.getElementById('fbSetupPassBtn').addEventListener('click', ()=>{
-    const val = document.getElementById('fbSetupPass').value.trim();
-    const err = document.getElementById('fbSetupErr');
-    if(val !== FB_BOOTSTRAP_PASSWORD){ err.textContent = 'Неверный пароль администратора'; return; }
-    err.textContent = '';
-    step1.style.display = 'none';
-    step2.style.display = 'block';
-  });
-  document.getElementById('fbSetupSaveBtn').addEventListener('click', ()=>{
-    const cfg = {
-      apiKey: document.getElementById('fbApiKey').value.trim(),
-      authDomain: document.getElementById('fbAuthDomain').value.trim(),
-      databaseURL: document.getElementById('fbDbUrl').value.trim(),
-      projectId: document.getElementById('fbProjectId').value.trim(),
-      storageBucket: document.getElementById('fbStorageBucket').value.trim(),
-      messagingSenderId: document.getElementById('fbMsgSenderId').value.trim(),
-      appId: document.getElementById('fbAppId').value.trim()
-    };
-    const err = document.getElementById('fbSetupErr2');
-    if(!cfg.apiKey || !cfg.projectId || !cfg.appId){ err.textContent = 'Заполните обязательные поля: apiKey, projectId, appId'; return; }
-    hzSaveFirebaseConfig(cfg);
-    location.reload();
-  });
+  // Данных нигде нет — показываем экран настройки с шага пароля
+  document.getElementById('fbSetupScreen').style.display = 'flex';
 }
+document.getElementById('fbSetupPassBtn').addEventListener('click', ()=>{
+  const val = document.getElementById('fbSetupPass').value.trim();
+  const err = document.getElementById('fbSetupErr');
+  if(val !== FB_BOOTSTRAP_PASSWORD){ err.textContent = 'Неверный пароль администратора'; return; }
+  err.textContent = '';
+  document.getElementById('fbSetupStep1').style.display = 'none';
+  document.getElementById('fbSetupStep2').style.display = 'block';
+});
+document.getElementById('fbSetupSaveBtn').addEventListener('click', hzHandleSetupSave);
 
 function startApp(){
 "use strict";
@@ -1734,15 +1798,19 @@ function renderAdminTab(){
     });
   } else if(adminActiveTab==='security'){
     const fbCfg = window.HZ.firebaseConfig || {};
+    const isEmbedded = !hzGetSavedFirebaseConfig() && !!window.HZ_EMBEDDED_CONFIG;
     body.innerHTML = `
       <div class="field"><label>Логин администратора</label><input id="secLogin" value="${State.settings.adminLogin||'admin'}"></div>
       <div class="field"><label>Пароль администратора</label><input id="secPass" value="${State.settings.adminPassword||'12345'}"></div>
       <button class="btn btn-primary" id="saveSecBtn">Сохранить</button>
       <div class="section-title" style="padding:16px 0 6px;font-size:14px;">База данных Firebase</div>
-      <p style="color:var(--text-dim);font-size:12px;margin:0 0 10px;">Подключённый проект: <b>${fbCfg.projectId||'—'}</b>. Изменить или удалить эти данные может только администратор.</p>
+      <p style="color:var(--text-dim);font-size:12px;margin:0 0 6px;">Подключённый проект: <b>${fbCfg.projectId||'—'}</b></p>
+      <p style="color:var(--text-dim);font-size:12px;margin:0 0 10px;">${isEmbedded
+        ? 'Данные вписаны в сам файл сайта — сайт работает у всех клиентов без пароля и экрана настройки.'
+        : 'Данные сохранены только в этом браузере (предпросмотр). Чтобы сайт заработал у всех клиентов, скачайте готовый файл и загрузите его на хостинг.'}</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-outline" style="width:auto;padding:12px 16px;" id="changeFirebaseBtn"><i class="fa-solid fa-database"></i> Изменить данные Firebase</button>
-        <button class="btn" style="width:auto;padding:12px 16px;background:var(--danger);color:#fff;" id="deleteFirebaseBtn"><i class="fa-solid fa-trash"></i> Удалить данные Firebase</button>
+        <button class="btn" style="width:auto;padding:12px 16px;background:var(--danger);color:#fff;" id="deleteFirebaseBtn"><i class="fa-solid fa-trash"></i> Сбросить локально</button>
       </div>`;
     $('#saveSecBtn').addEventListener('click', async ()=>{
       const adminLogin = $('#secLogin').value.trim(), adminPassword = $('#secPass').value.trim();
@@ -1754,15 +1822,13 @@ function renderAdminTab(){
       const pass = prompt('Введите пароль администратора, чтобы изменить данные Firebase:');
       if(pass === null) return;
       if(pass !== (State.settings.adminPassword||'12345')){ toast('Неверный пароль','','fa-circle-exclamation'); return; }
-      if(confirm('Текущие данные Firebase будут удалены из этого браузера, и откроется экран настройки нового проекта. Продолжить?')){
-        window.hzDeleteFirebaseConfig();
-      }
+      window.hzOpenFirebaseSetupForm(window.HZ.firebaseConfig);
     });
     $('#deleteFirebaseBtn').addEventListener('click', ()=>{
-      const pass = prompt('Введите пароль администратора, чтобы удалить данные Firebase:');
+      const pass = prompt('Введите пароль администратора, чтобы сбросить данные Firebase в этом браузере:');
       if(pass === null) return;
       if(pass !== (State.settings.adminPassword||'12345')){ toast('Неверный пароль','','fa-circle-exclamation'); return; }
-      if(confirm('Удалить сохранённые данные Firebase из этого браузера? Сайт перезапустится и попросит настроить подключение заново.')){
+      if(confirm('Удалить локально сохранённые данные Firebase в этом браузере? Если данные вписаны в сам файл сайта, они всё равно продолжат работать у всех клиентов, пока вы не загрузите на хостинг файл с пустыми данными.')){
         window.hzDeleteFirebaseConfig();
       }
     });
