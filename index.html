@@ -1,1270 +1,1926 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toyota Premium Parts | Wet Asphalt Edition</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f0f0f;
-            --accent-color: #eb0a1e;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 1);
-            --text-color: #e0e0e0;
-            --modal-bg: rgba(15, 15, 15, 0.95);
-            --gold-color: #f39c12;
-            --success-color: #27ae60;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>HORIZON MARKET</title>
+<meta name="theme-color" content="#6C2BD9" id="themeColorMeta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HORIZON">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" id="appleTouchIcon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF4FA3'/%3E%3Cstop offset='1' stop-color='%23E31C79'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23g)'/%3E%3Cpolygon points='256,96 306,158 256,220 206,158' fill='%23fff'/%3E%3Ctext x='256' y='372' font-family='Georgia, Times New Roman, serif' font-style='italic' font-weight='700' font-size='168' fill='%23fff' text-anchor='middle' letter-spacing='-6'%3EHM%3C/text%3E%3C/svg%3E">
+<link rel="icon" id="favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF4FA3'/%3E%3Cstop offset='1' stop-color='%23E31C79'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23g2)'/%3E%3Cpolygon points='256,96 306,158 256,220 206,158' fill='%23fff'/%3E%3Ctext x='256' y='372' font-family='Georgia, Times New Roman, serif' font-style='italic' font-weight='700' font-size='168' fill='%23fff' text-anchor='middle' letter-spacing='-6'%3EHM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
-        body {
-            background: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 50%, rgba(20, 20, 25, 0.8), #050505), url('https://www.transparenttextures.com/patterns/asphalt-dark.png');
-            color: var(--text-color);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+<style>
+:root{
+  --violet:#6C2BD9;
+  --violet-dark:#4E1CA8;
+  --magenta:#E31C79;
+  --bg:#F5F3FB;
+  --surface:#FFFFFF;
+  --surface-2:#F0EDFA;
+  --text:#1B1730;
+  --text-dim:#6B6580;
+  --border:#E7E3F5;
+  --success:#1FAE6E;
+  --danger:#E14747;
+  --old-price:#A79FC2;
+  --radius-lg:22px;
+  --radius-md:16px;
+  --radius-sm:10px;
+  --shadow-soft:0 8px 24px rgba(76,26,168,.10);
+  --shadow-pop:0 16px 40px rgba(76,26,168,.22);
+  --grad-main:linear-gradient(135deg,#7B2FF7 0%,#E31C79 100%);
+  --tabbar-h:64px;
+}
+[data-theme="dark"]{
+  --bg:#121018;
+  --surface:#1B1826;
+  --surface-2:#241F35;
+  --text:#F2F0FA;
+  --text-dim:#9992B5;
+  --border:#2E2942;
+  --old-price:#6E668C;
+  --shadow-soft:0 8px 24px rgba(0,0,0,.35);
+  --shadow-pop:0 16px 40px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Manrope',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:calc(var(--tabbar-h) + 14px);
+  transition:background .25s ease,color .25s ease;
+  overflow-x:hidden;
+}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+input,select,textarea{font-family:inherit; color:inherit;}
+img{max-width:100%; display:block;}
+a{color:inherit; text-decoration:none;}
+::-webkit-scrollbar{width:6px; height:6px;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:10px;}
 
-        /* --- HEADER --- */
-        header {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--glass-border);
-            backdrop-filter: blur(15px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
+/* ===== TOPBAR ===== */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  background:var(--surface);
+  padding:10px 12px 10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.05);
+}
+.topbar-row1{display:flex; align-items:center; gap:10px;}
+.logo{
+  font-weight:800; font-size:19px; letter-spacing:-.5px;
+  background:var(--grad-main); -webkit-background-clip:text; background-clip:text; color:transparent;
+  white-space:nowrap;
+  display:flex; align-items:center; gap:6px;
+}
+.logo i{-webkit-text-fill-color:var(--violet); color:var(--violet);}
+.searchwrap{
+  flex:1; display:flex; align-items:center; gap:8px;
+  background:var(--surface-2); border-radius:999px; padding:9px 14px;
+  border:1px solid transparent;
+}
+.searchwrap input{flex:1; border:none; background:none; outline:none; font-size:14px; color:var(--text);}
+.searchwrap i{color:var(--text-dim); font-size:14px;}
+.iconbtn{
+  width:38px; height:38px; border-radius:12px; background:var(--surface-2);
+  display:flex; align-items:center; justify-content:center; font-size:15px; position:relative; flex-shrink:0;
+  transition:transform .15s ease;
+}
+.iconbtn:active{transform:scale(.9);}
+.badge{
+  position:absolute; top:-4px; right:-4px; background:var(--magenta); color:#fff;
+  font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; padding:0 3px;
+}
+.theme-switch{
+  width:44px; height:26px; border-radius:20px; background:var(--surface-2); position:relative; flex-shrink:0; border:1px solid var(--border);
+}
+.theme-switch .knob{
+  position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%;
+  background:var(--grad-main); transition:left .2s ease; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px;
+}
+[data-theme="dark"] .theme-switch .knob{left:20px;}
+.topbar-row2{display:flex; gap:8px; margin-top:9px; overflow-x:auto; padding-bottom:2px;}
+.pillbtn{
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+  background:var(--surface-2); padding:8px 14px; border-radius:999px; font-size:13px; font-weight:600;
+}
+.pillbtn.primary{background:var(--grad-main); color:#fff;}
 
-        .header-top { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-        .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: #fff; text-shadow: 0 0 15px rgba(235, 10, 30, 0.5); text-decoration: none; min-width: fit-content; }
-        
-        .catalog-btn { background: var(--accent-color); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: bold; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 5px 15px rgba(235, 10, 30, 0.3); }
-        .catalog-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(235, 10, 30, 0.6); }
+/* ===== BANNER ===== */
+.banner{
+  position:relative; margin:12px; border-radius:var(--radius-lg); overflow:hidden; height:150px;
+  box-shadow:var(--shadow-soft); background:var(--surface-2);
+}
+.banner-track{display:flex; height:100%; transition:transform .5s cubic-bezier(.65,0,.35,1);}
+.banner-slide{min-width:100%; height:100%;}
+.banner-slide img{width:100%; height:100%; object-fit:cover;}
+.banner-dots{position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:6px;}
+.banner-dots span{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5);}
+.banner-dots span.active{background:#fff; width:16px; border-radius:4px;}
 
-        .search-container { position: relative; flex-grow: 1; max-width: 500px; }
-        .smart-search { width: 100%; padding: 12px 20px 12px 45px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 30px; color: white; outline: none; transition: 0.3s; }
-        .search-icon-inside { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); pointer-events: none; }
-        .smart-search:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.1); box-shadow: 0 0 15px rgba(235, 10, 30, 0.3); }
+/* ===== SECTION TITLES ===== */
+.section-title{padding:4px 16px 10px; font-size:17px; font-weight:800; display:flex; align-items:center; justify-content:between;}
 
-        .nav-actions { display: flex; gap: 12px; align-items: center; }
-        .icon-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: #fff; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 0.85rem; transition: 0.3s; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .icon-btn i { width: 18px; height: 18px; }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; transform: translateY(-2px); }
+/* ===== PRODUCT GRID ===== */
+.grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:0 12px 20px;}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:1200px){.grid{grid-template-columns:repeat(5,1fr);}}
+.card{
+  background:var(--surface); border-radius:var(--radius-md); overflow:hidden; position:relative;
+  box-shadow:var(--shadow-soft); display:flex; flex-direction:column;
+  transition:transform .15s ease;
+}
+.card:active{transform:scale(.97);}
+.card-img{position:relative; aspect-ratio:1/1; background:var(--surface-2); overflow:hidden;}
+.card-img img{width:100%; height:100%; object-fit:cover;}
+.sale-ribbon{
+  position:absolute; top:8px; left:8px; background:var(--magenta); color:#fff; font-size:11px; font-weight:800;
+  padding:4px 8px; border-radius:8px;
+}
+.fav-toggle{
+  position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--text-dim);
+  backdrop-filter:blur(4px);
+}
+.fav-toggle.active{color:var(--magenta);}
+.card-body{padding:10px 10px 12px; display:flex; flex-direction:column; gap:5px; flex:1;}
+.card-rating{display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim);}
+.card-rating i{color:#FFA800; font-size:11px;}
+.card-name{font-size:13px; font-weight:600; line-height:1.3; min-height:34px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.card-prices{display:flex; align-items:baseline; gap:6px; margin-top:2px;}
+.card-price{font-size:16px; font-weight:800;}
+.card-oldprice{font-size:12px; color:var(--old-price); text-decoration:line-through;}
+.card-footer{display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px;}
+.cart-add-btn{
+  background:var(--grad-main); color:#fff; width:34px; height:34px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 4px 10px rgba(123,47,247,.35);
+}
+.qty-stepper{display:flex; align-items:center; gap:8px; background:var(--surface-2); border-radius:11px; padding:4px 8px;}
+.qty-stepper button{width:22px; height:22px; border-radius:6px; background:var(--surface); font-weight:800;}
+.qty-stepper span{font-weight:700; font-size:13px; min-width:14px; text-align:center;}
+.empty-state{padding:60px 20px; text-align:center; color:var(--text-dim);}
+.empty-state i{font-size:40px; margin-bottom:12px; color:var(--border);}
 
-        .garage-btn { border-color: #f39c12; color: #f39c12; }
-        .cart-btn { background: white; color: black; font-weight: bold; }
+/* ===== BOTTOM NAV ===== */
+.bottomnav{
+  position:fixed; bottom:0; left:0; right:0; height:var(--tabbar-h); background:var(--surface);
+  display:flex; align-items:center; justify-content:space-around; z-index:50;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08); padding-bottom:env(safe-area-inset-bottom);
+  border-top:1px solid var(--border);
+}
+.navbtn{display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:700; color:var(--text-dim); position:relative; padding:4px 8px;}
+.navbtn i{font-size:19px;}
+.navbtn.active{color:var(--violet);}
+.navbtn .badge{top:-2px; right:0;}
 
-        /* --- PREMIUM BADGE --- */
-        .premium-badge {
-            background: linear-gradient(135deg, #f1c40f, #f39c12);
-            color: #000;
-            padding: 8px 15px;
-            border-radius: 12px;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            font-weight: 900;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
-            border: 1px solid rgba(255,255,255,0.3);
-            animation: shine 2s infinite;
-        }
-        .premium-badge span { opacity: 0.8; font-weight: bold; font-size: 0.7rem; }
-        @keyframes shine {
-            0% { box-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
-            50% { box-shadow: 0 0 25px rgba(241, 196, 15, 0.7); }
-            100% { box-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
-        }
+/* ===== MODAL / SHEET GENERIC ===== */
+.overlay{
+  position:fixed; inset:0; background:rgba(15,10,30,.55); z-index:100; display:none;
+  align-items:flex-end; justify-content:center; backdrop-filter:blur(2px);
+}
+.overlay.open{display:flex;}
+.overlay.center{align-items:center;}
+.sheet{
+  background:var(--surface); width:100%; max-width:520px; border-radius:24px 24px 0 0;
+  max-height:92vh; overflow-y:auto; padding:18px 18px calc(20px + env(safe-area-inset-bottom));
+  animation:slideUp .28s ease;
+}
+.overlay.center .sheet{border-radius:24px; max-height:88vh;}
+@keyframes slideUp{from{transform:translateY(40px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+.sheet-handle{width:40px; height:4px; background:var(--border); border-radius:3px; margin:0 auto 14px;}
+.sheet-title{font-size:19px; font-weight:800; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;}
+.close-x{width:32px; height:32px; border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center;}
 
-        /* --- MODAL SYSTEM --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+/* ===== FORMS ===== */
+.field{margin-bottom:12px;}
+.field label{display:block; font-size:12px; font-weight:700; color:var(--text-dim); margin-bottom:6px;}
+.field input, .field select, .field textarea{
+  width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--border); background:var(--surface-2); font-size:14px; outline:none;
+}
+.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--violet);}
+.field-row{display:flex; gap:10px;}
+.field-row .field{flex:1;}
+.btn{
+  width:100%; padding:14px; border-radius:14px; font-weight:800; font-size:14px; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-primary{background:var(--grad-main); color:#fff; box-shadow:0 8px 20px rgba(123,47,247,.3);}
+.btn-outline{background:var(--surface-2); color:var(--text); border:1.5px solid var(--border);}
+.btn-danger{background:var(--danger); color:#fff;}
+.btn-sm{width:auto; padding:8px 14px; font-size:12px; border-radius:10px;}
+.photo-upload{
+  width:88px; height:88px; border-radius:50%; background:var(--surface-2); border:2px dashed var(--border);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 16px; position:relative; overflow:hidden; font-size:22px; color:var(--text-dim);
+}
+.photo-upload img{width:100%; height:100%; object-fit:cover; position:absolute; inset:0;}
+.link-btn{color:var(--violet); font-weight:700; font-size:13px; text-align:center; display:block; margin-top:10px;}
 
-        .modal-content {
-            background: var(--modal-bg);
-            border: 1px solid var(--glass-border);
-            padding: 40px;
-            border-radius: 24px;
-            width: 95%;
-            max-width: 450px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-        
-        #clientsListStep.active-content, #ordersListStep.active-content, #userOrdersStep.active-content, #productViewStep.active-content, #cartStep.active-content, #checkoutStep.active-content { max-width: 800px; }
-        .modal-content h2 { margin-bottom: 20px; color: #fff; }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #888; }
-        
-        .modal-input, .modal-select {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: #fff;
-            outline: none;
-            font-size: 1rem;
-        }
-        .modal-select option { background: #1a1a1a; }
-        .modal-input:focus { border-color: var(--accent-color); }
-        .modal-btn {
-            width: 100%;
-            padding: 14px;
-            margin-top: 10px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-        .primary-btn { background: var(--accent-color); color: white; }
-        .secondary-btn { background: var(--glass-bg); color: white; border: 1px solid var(--glass-border); }
-        .danger-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; margin-top: 20px; font-size: 0.8rem; }
-        .danger-btn:hover { background: #ff4444; color: white; }
-        .close-modal { position: absolute; top: 20px; right: 20px; cursor: pointer; color: #555; }
-        .error-msg { color: var(--accent-color); font-size: 0.85rem; margin-top: 10px; display: none; }
+/* ===== PRODUCT DETAIL ===== */
+.pd-gallery{display:flex; gap:8px; overflow-x:auto; margin:-18px -18px 14px; padding:0 18px;}
+.pd-gallery img{width:260px; height:260px; object-fit:cover; border-radius:16px; flex-shrink:0; background:var(--surface-2);}
+.pd-price-row{display:flex; align-items:baseline; gap:10px; margin:8px 0;}
+.pd-price{font-size:26px; font-weight:900;}
+.pd-rating{display:flex; align-items:center; gap:6px; margin-bottom:10px; font-size:13px; color:var(--text-dim);}
+.char-table{width:100%; border-collapse:collapse; margin-top:8px;}
+.char-table tr{border-bottom:1px solid var(--border);}
+.char-table td{padding:9px 4px; font-size:13px;}
+.char-table td:first-child{color:var(--text-dim); width:45%;}
+.related-scroll{display:flex; gap:10px; overflow-x:auto; margin-top:10px;}
+.related-scroll .card{min-width:140px;}
+.lightbox{position:fixed; inset:0; background:#000; z-index:200; display:none; align-items:center; justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:94%; max-height:90%; object-fit:contain;}
+.lightbox .close-x{position:absolute; top:16px; right:16px; background:rgba(255,255,255,.15); color:#fff;}
 
-        /* --- TABLES --- */
-        .clients-table, .orders-table, .cart-table { width: 100%; border-collapse: collapse; margin-top: 20px; color: #fff; font-size: 0.85rem; }
-        .clients-table th, .orders-table th, .cart-table th { text-align: left; padding: 12px; border-bottom: 1px solid var(--glass-border); color: #888; }
-        .clients-table td, .orders-table td, .cart-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
-        .status-admin { background: rgba(235, 10, 30, 0.2); color: var(--accent-color); }
-        .status-user { background: rgba(255,255,255,0.1); color: #aaa; }
-        .status-process { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
-        .status-accepted { background: rgba(39, 174, 96, 0.2); color: #27ae60; }
-        .status-shipped { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+/* ===== CART ===== */
+.cart-item{display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border);}
+.cart-item img{width:64px; height:64px; border-radius:10px; object-fit:cover; background:var(--surface-2);}
+.cart-item-body{flex:1; display:flex; flex-direction:column; gap:4px;}
+.cart-item-name{font-size:13px; font-weight:600;}
+.cart-item-seller{font-size:11px; color:var(--text-dim);}
+.cart-total-row{display:flex; justify-content:space-between; align-items:center; padding:14px 0; font-size:16px; font-weight:800;}
+.remove-x{color:var(--danger); font-size:12px; font-weight:700;}
 
-        .action-icon { cursor: pointer; transition: 0.2s; color: #888; }
-        .action-icon:hover { color: #fff; }
+/* ===== CHAT ===== */
+.chat-list-item{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border);}
+.chat-avatar{width:46px; height:46px; border-radius:50%; background:var(--grad-main); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; flex-shrink:0;}
+.chat-list-body{flex:1; min-width:0;}
+.chat-list-name{font-weight:700; font-size:14px;}
+.chat-list-last{font-size:12px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.chat-thread{display:flex; flex-direction:column; height:60vh; }
+.chat-messages{flex:1; overflow-y:auto; padding:10px 0; display:flex; flex-direction:column; gap:8px;}
+.msg{max-width:75%; padding:10px 13px; border-radius:16px; font-size:13px; line-height:1.4;}
+.msg.in{background:var(--surface-2); align-self:flex-start; border-bottom-left-radius:4px;}
+.msg.out{background:var(--grad-main); color:#fff; align-self:flex-end; border-bottom-right-radius:4px;}
+.chat-input-row{display:flex; gap:8px; padding-top:8px; border-top:1px solid var(--border);}
+.chat-input-row input{flex:1; border:1.5px solid var(--border); border-radius:20px; padding:10px 16px; background:var(--surface-2); outline:none;}
+.chat-input-row button{width:42px; height:42px; border-radius:50%; background:var(--grad-main); color:#fff; flex-shrink:0;}
 
-        /* --- PRODUCT VIEW DETAILS --- */
-        .product-view-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: left; }
-        @media (max-width: 600px) { .product-view-container { grid-template-columns: 1fr; } }
-        .product-main-img { width: 100%; border-radius: 15px; border: 1px solid var(--glass-border); }
-        .product-info-specs { color: #aaa; font-size: 0.9rem; line-height: 1.6; margin: 15px 0; white-space: pre-line; }
-        .small-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .small-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 5px; cursor: pointer; border: 1px solid transparent; }
-        .small-gallery img:hover { border-color: var(--accent-color); }
+/* ===== PROFILE ===== */
+.profile-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+.profile-avatar{width:64px; height:64px; border-radius:50%; object-fit:cover; background:var(--surface-2);}
+.profile-name{font-weight:800; font-size:16px;}
+.profile-role{font-size:12px; color:var(--violet); font-weight:700;}
+.menu-item{display:flex; align-items:center; gap:12px; padding:14px 4px; border-bottom:1px solid var(--border); font-weight:600; font-size:14px;}
+.menu-item i{width:22px; color:var(--violet); font-size:16px;}
+.menu-item i.fa-chevron-right{margin-left:auto; color:var(--text-dim); font-size:12px; width:auto;}
+.order-item{padding:12px 0; border-bottom:1px solid var(--border);}
+.order-item .row{display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;}
+.order-status{font-size:11px; font-weight:800; padding:3px 9px; border-radius:8px; background:var(--surface-2); color:var(--violet); display:inline-block;}
 
-        /* --- PREVIEW IMAGES --- */
-        .image-previews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        .preview-box { width: 100%; aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 1px dashed #444; border-radius: 8px; overflow: hidden; }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+/* ===== ADMIN ===== */
+.admin-tabs{display:flex; gap:8px; overflow-x:auto; margin-bottom:14px;}
+.admin-tab{padding:9px 14px; border-radius:10px; background:var(--surface-2); font-size:12px; font-weight:700; white-space:nowrap;}
+.admin-tab.active{background:var(--grad-main); color:#fff;}
+.list-row{display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--border); gap:10px;}
+.list-row-title{font-weight:700; font-size:13px;}
+.list-row-sub{font-size:11px; color:var(--text-dim);}
+.tiny-btn{padding:6px 10px; border-radius:8px; background:var(--surface-2); font-size:11px; font-weight:700;}
+.tiny-btn.danger{color:var(--danger);}
+.tiny-btn.primary{background:var(--grad-main); color:#fff;}
+.img-upload-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+.img-thumb{width:64px; height:64px; border-radius:10px; object-fit:cover; position:relative; background:var(--surface-2);}
+.img-thumb .rm{position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--danger); color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;}
+.img-thumb-add{width:64px; height:64px; border-radius:10px; background:var(--surface-2); border:1.5px dashed var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-dim);}
 
-        /* --- ADMIN BUTTON --- */
-        #adminPanelBtn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            display: none; 
-            justify-content: center;
-            align-items: center;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(235, 10, 30, 0.4);
-            z-index: 999;
-            animation: spin 10s linear infinite;
-        }
-        @keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
+/* ===== TOASTS / CONSULTANT / INSTALL ===== */
+.toast-wrap{position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:300; display:flex; flex-direction:column; gap:8px; width:92%; max-width:380px;}
+.toast{
+  background:var(--surface); border-left:4px solid var(--magenta); border-radius:14px; padding:12px 14px; box-shadow:var(--shadow-pop);
+  display:flex; gap:10px; align-items:center; animation:toastIn .3s ease;
+}
+@keyframes toastIn{from{opacity:0; transform:translateY(-14px);} to{opacity:1; transform:translateY(0);}}
+.toast i{color:var(--magenta); font-size:18px;}
+.toast-title{font-weight:800; font-size:13px;}
+.toast-sub{font-size:12px; color:var(--text-dim);}
 
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .admin-action-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            padding: 20px 10px;
-            border-radius: 15px;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .admin-action-btn:hover { background: var(--accent-color); border-color: var(--accent-color); transform: translateY(-5px); }
+.consultant-fab{
+  position:fixed; bottom:calc(var(--tabbar-h) + 16px); right:16px; width:54px; height:54px; border-radius:50%;
+  background:var(--grad-main); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;
+  box-shadow:var(--shadow-pop); z-index:60;
+}
+.consultant-panel{
+  position:fixed; bottom:calc(var(--tabbar-h) + 78px); right:16px; width:min(320px,90vw); max-height:60vh;
+  background:var(--surface); border-radius:20px; box-shadow:var(--shadow-pop); z-index:60; display:none; flex-direction:column; overflow:hidden;
+}
+.consultant-panel.open{display:flex;}
+.consultant-head{background:var(--grad-main); color:#fff; padding:14px; font-weight:800; font-size:13px; display:flex; align-items:center; gap:8px;}
+.consultant-body{flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px;}
+.consultant-quick{display:flex; flex-wrap:wrap; gap:6px; padding:0 12px 12px;}
+.consultant-quick button{background:var(--surface-2); font-size:11px; padding:6px 10px; border-radius:10px; font-weight:600;}
 
-        .container { max-width: 1200px; margin: 50px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 20px; }
-        .product-card { position: relative; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; overflow: hidden; transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1); backdrop-filter: blur(5px); transform-style: preserve-3d; cursor: pointer; }
-        .product-card:hover { transform: translateY(-10px) rotateX(5deg) rotateY(-5deg); border-color: var(--accent-color); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .product-img { width: 100%; height: 200px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); margin-bottom: 15px; }
-        .old-price { text-decoration: line-through; color: #777; font-size: 0.9rem; margin-right: 10px; }
-        .price { font-size: 1.4rem; font-weight: bold; color: var(--accent-color); margin-bottom: 20px; display: inline-block; }
-        .buy-btn { position: relative; width: 100%; padding: 15px; background: transparent; border: 1px solid var(--accent-color); color: #fff; text-transform: uppercase; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; overflow: hidden; z-index: 2; }
-        .buy-btn::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: var(--accent-color); z-index: -1; transform: scaleX(0); transition: 0.4s; }
-        .buy-btn:hover::after { transform: scaleX(1); }
+.install-banner{
+  position:fixed; left:12px; right:12px; bottom:calc(var(--tabbar-h) + 10px); background:var(--surface); border-radius:16px;
+  box-shadow:var(--shadow-pop); padding:12px 14px; display:none; align-items:center; gap:10px; z-index:70;
+}
+.install-banner.show{display:flex;}
+.install-banner i{font-size:24px; color:var(--violet);}
+.install-banner .txt{flex:1;}
+.install-banner .txt b{font-size:13px; display:block;}
+.install-banner .txt span{font-size:11px; color:var(--text-dim);}
 
-        /* --- АДМИН КНОПКИ НА КАРТОЧКЕ --- */
-        .admin-controls {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-        .admin-card-btn {
-            background: rgba(15, 15, 15, 0.8);
-            border: 1px solid var(--glass-border);
-            color: #fff;
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .admin-card-btn:hover { background: var(--accent-color); border-color: var(--accent-color); }
-        .admin-card-btn.del:hover { background: #ff4444; border-color: #ff4444; }
+.stars-input i{font-size:20px; color:var(--border); cursor:pointer;}
+.stars-input i.active{color:#FFA800;}
 
-        /* --- НОВЫЕ СТИЛИ ДЛЯ ВЫБОРА КОЛИЧЕСТВА --- */
-        .qty-controls {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--accent-color);
-            border-radius: 8px;
-            margin-top: 0;
-        }
-        .qty-btn-inc {
-            cursor: pointer;
-            border: none;
-            background: var(--accent-color);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .qty-btn-inc:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--accent-color); }
-        .qty-input-num {
-            width: 40px;
-            text-align: center;
-            border: none;
-            background: transparent;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: bold;
-            outline: none;
-        }
-        .hidden { display: none !important; }
+.catalog-drawer{max-height:70vh; overflow-y:auto;}
+.cat-group{margin-bottom:10px;}
+.cat-group-title{font-weight:800; padding:10px 0; display:flex; align-items:center; justify-content:space-between;}
+.subcat-chip{padding:8px 12px; background:var(--surface-2); border-radius:10px; font-size:12px; font-weight:600; margin:4px 6px 4px 0; display:inline-block;}
 
-        /* --- SIDE CATALOG STYLES --- */
-        .side-catalog {
-            position: fixed;
-            top: 0;
-            left: -320px;
-            width: 300px;
-            height: 100%;
-            background: var(--modal-bg);
-            border-right: 1px solid var(--glass-border);
-            z-index: 1001;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px 20px;
-            backdrop-filter: blur(20px);
-        }
-        .side-catalog.open { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
-        .catalog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-        .catalog-list { list-style: none; }
-        .catalog-item { margin-bottom: 10px; }
-        .catalog-link { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; color: #fff; text-decoration: none; border-radius: 10px;
-            background: rgba(255,255,255,0.03); transition: 0.3s; cursor: pointer;
-        }
-        .catalog-link:hover { background: var(--accent-color); }
-        .sub-catalog { padding-left: 20px; margin-top: 5px; display: none; }
-        .sub-catalog.active { display: block; animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .sub-link { padding: 8px 15px; color: #aaa; text-decoration: none; display: block; font-size: 0.9rem; transition: 0.2s; cursor: pointer; }
-        .sub-link:hover { color: #fff; padding-left: 20px; }
-    </style>
+.about-social{display:flex; gap:14px; justify-content:center; margin:16px 0;}
+.about-social a{width:52px; height:52px; border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:22px;}
+.about-social a.ig i{color:#E1306C;} .about-social a.tg i{color:#26A5E4;} .about-social a.wa i{color:#25D366;}
+
+.spinner{width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--violet); border-radius:50%; animation:spin .7s linear infinite; margin:30px auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.hidden{display:none !important;}
+</style>
 </head>
-<body>
+<body data-theme="light">
 
-    <div class="side-catalog" id="sideCatalog">
-        <div class="catalog-header">
-            <h3>Каталог</h3>
-            <i data-lucide="x" style="cursor:pointer" onclick="toggleCatalog()"></i>
-        </div>
-        <ul class="catalog-list" id="mainCatalogList">
-            <li class="catalog-item">
-                <div class="catalog-link" onclick="filterByCategory('Все')"><span>Все товары</span></div>
-            </li>
-            </ul>
+<!-- FIREBASE SETUP GATE (показывается только пока не подключён Firebase) -->
+<div id="fbSetupScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1B1730,#3a1a63);align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:380px;background:#1F1B33;border-radius:22px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+    <div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:#fff;margin-bottom:4px;"><i class="fa-solid fa-diamond" style="color:#E31C79;"></i> HORIZON MARKET</div>
+    <div style="color:#a79fc2;font-size:12.5px;margin-bottom:20px;line-height:1.5;">Первый запуск: подключите свою базу данных Firebase. Эти данные будут сохранены в этом браузере навсегда и доступны для изменения только администратору.</div>
+
+    <div id="fbSetupStep1">
+      <div style="color:#cfc9e6;font-size:13px;margin-bottom:6px;">Пароль администратора</div>
+      <input id="fbSetupPass" type="password" placeholder="Пароль" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:14px;margin-bottom:8px;">
+      <div id="fbSetupErr" style="color:#ff6b6b;font-size:12px;min-height:16px;margin-bottom:8px;"></div>
+      <button id="fbSetupPassBtn" style="width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#7B2FF7,#E31C79);color:#fff;font-weight:700;font-size:14px;">Продолжить</button>
     </div>
 
-    <div id="adminPanelBtn" onclick="openAdminSettings()">
-        <i data-lucide="settings"></i>
+    <div id="fbSetupStep2" style="display:none;">
+      <div style="color:#cfc9e6;font-size:13px;margin-bottom:6px;">Данные проекта Firebase (Настройки проекта → Общие → Ваши приложения)</div>
+      <input id="fbApiKey" placeholder="apiKey *" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <input id="fbAuthDomain" placeholder="authDomain" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <input id="fbDbUrl" placeholder="databaseURL (необязательно)" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <input id="fbProjectId" placeholder="projectId *" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <input id="fbStorageBucket" placeholder="storageBucket" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <input id="fbMsgSenderId" placeholder="messagingSenderId" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <input id="fbAppId" placeholder="appId *" style="width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid #3a3454;background:#171429;color:#fff;font-size:13px;margin-bottom:7px;">
+      <div id="fbSetupErr2" style="color:#ff6b6b;font-size:12px;min-height:16px;margin-bottom:4px;"></div>
+      <button id="fbSetupSaveBtn" style="width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#7B2FF7,#E31C79);color:#fff;font-weight:700;font-size:14px;margin-top:6px;"><i class="fa-solid fa-floppy-disk"></i> Сохранить и запустить</button>
     </div>
+  </div>
+</div>
 
-    <div class="modal-overlay" id="authModal">
-        <div class="modal-content" id="modalMainBox">
-            <i data-lucide="x" class="close-modal" onclick="closeModal()"></i>
-            <h2 id="modalTitle">Личный кабинет</h2>
-            
-            <div id="step1">
-                <button class="modal-btn primary-btn" onclick="showLogin()">Вход</button>
-                <button class="modal-btn secondary-btn" onclick="showRegisterStep1()">Регистрация</button>
-            </div>
+<!-- TOASTS -->
+<div class="toast-wrap" id="toastWrap"></div>
 
-            <div id="regStep1" style="display:none;">
-                <div class="form-group">
-                    <label>Номер телефона</label>
-                    <input type="text" id="regPhone" class="modal-input" value="+992 ">
-                </div>
-                <button class="modal-btn primary-btn" onclick="checkUserExists()">Далее</button>
-            </div>
-
-            <div id="regStep2" style="display:none;">
-                <div class="form-group">
-                    <label>ФИО</label>
-                    <input type="text" id="regName" class="modal-input" placeholder="Иван Иванов">
-                </div>
-                <div class="form-group">
-                    <label>Адрес</label>
-                    <input type="text" id="regAddress" class="modal-input" placeholder="г. Душанбе, ул...">
-                </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="regPass" class="modal-input">
-                </div>
-                <button class="modal-btn primary-btn" onclick="completeRegistration()">Создать аккаунт</button>
-            </div>
-
-            <div id="loginStep" style="display:none;">
-                <p id="userExistNotice" style="color: #888; margin-bottom: 10px; display:none;">Пользователь существует!</p>
-                <div class="form-group">
-                    <label>Номер телефона / Логин</label>
-                    <input type="text" id="loginPhone" class="modal-input" value="+992 ">
-                </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="loginPass" class="modal-input">
-                </div>
-                <button class="modal-btn primary-btn" onclick="handleLogin()">Войти</button>
-                <div id="loginError" class="error-msg">Неверный пароль или номер!</div>
-            </div>
-
-            <div id="profileStep" style="display:none;">
-                <div id="userFields">
-                    <div class="form-group">
-                        <label>Изменить ФИО / Название</label>
-                        <input type="text" id="editName" class="modal-input">
-                    </div>
-                    <div class="form-group" id="addressGroup">
-                        <label>Изменить адрес</label>
-                        <input type="text" id="editAddress" class="modal-input">
-                    </div>
-                </div>
-                <button class="modal-btn primary-btn" onclick="updateProfile()">Сохранить изменения</button>
-                
-                <button id="viewUserOrdersBtn" class="modal-btn secondary-btn" style="margin-top:10px" onclick="showUserOrders()">
-                    <i data-lucide="package" style="width:16px; vertical-align:middle;"></i> Мои заказы
-                </button>
-
-                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-                <div class="form-group">
-                    <label>Старый пароль</label>
-                    <input type="password" id="oldPass" class="modal-input" placeholder="Введите старый пароль">
-                </div>
-                <div class="form-group">
-                    <label>Новый пароль</label>
-                    <input type="password" id="newPass" class="modal-input">
-                </div>
-                <button class="modal-btn secondary-btn" onclick="changePassword()">Изменить пароль</button>
-                <button class="modal-btn secondary-btn" style="margin-top:20px" onclick="logout()">Выйти из аккаунта</button>
-                
-                <div id="deleteSection" style="margin-top:20px; border-top: 1px solid #333; padding-top: 10px;">
-                    <div class="form-group">
-                        <label>Для удаления введите пароль</label>
-                        <input type="password" id="deletePass" class="modal-input">
-                    </div>
-                    <button class="modal-btn danger-btn" onclick="deleteAccount()">Удалить аккаунт навсегда</button>
-                </div>
-            </div>
-
-            <div id="userOrdersStep" style="display:none;">
-                <div style="overflow-x: auto;">
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Товар</th>
-                                <th>Дата / Время</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userOrdersTableBody"></tbody>
-                    </table>
-                </div>
-                <button class="modal-btn secondary-btn" style="margin-top:20px" onclick="showProfile()">Назад</button>
-            </div>
-
-            <div id="productViewStep" style="display:none;">
-                <div id="productViewContent"></div>
-            </div>
-
-            <div id="adminSettingsStep" style="display:none;">
-                <div class="admin-grid">
-                    <div class="admin-action-btn" onclick="showAddProduct()">
-                        <i data-lucide="plus-square"></i>
-                        <span>Добавить товар</span>
-                    </div>
-                    <div class="admin-action-btn" onclick="showOrdersList()">
-                        <i data-lucide="shopping-bag"></i>
-                        <span>Заказы</span>
-                    </div>
-                    <div class="admin-action-btn" id="adminUsersBtn" onclick="showClientsList()">
-                        <i data-lucide="users"></i>
-                        <span>Клиенты</span>
-                    </div>
-                    <div class="admin-action-btn" onclick="showCategoryManager()">
-                        <i data-lucide="layers"></i>
-                        <span>Категории</span>
-                    </div>
-                </div>
-                <button class="modal-btn secondary-btn" style="margin-top:25px" onclick="showProfile()">Назад в кабинет</button>
-            </div>
-
-            <div id="categoryManagerStep" style="display:none;">
-                <div class="form-group">
-                    <label>Название новой категории</label>
-                    <input type="text" id="newCatName" class="modal-input" placeholder="Напр: Диски">
-                </div>
-                <div class="form-group">
-                    <label>Родительский каталог (необязательно)</label>
-                    <select id="parentCatSelect" class="modal-select">
-                        <option value="">-- Основная категория --</option>
-                    </select>
-                </div>
-                <button class="modal-btn primary-btn" onclick="addNewCategory()">Создать категорию</button>
-                <button class="modal-btn secondary-btn" onclick="openAdminSettings()">Назад</button>
-            </div>
-
-            <div id="clientsListStep" style="display:none;">
-                <div style="overflow-x: auto;">
-                    <table class="clients-table">
-                        <thead>
-                            <tr>
-                                <th>Имя</th>
-                                <th>Телефон</th>
-                                <th>Пароль</th>
-                                <th>Статус</th>
-                                <th>Действие</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clientsTableBody"></tbody>
-                    </table>
-                </div>
-                <button class="modal-btn secondary-btn" style="margin-top:20px" onclick="openAdminSettings()">Назад</button>
-            </div>
-
-            <div id="ordersListStep" style="display:none;">
-                <div style="overflow-x: auto;">
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Товар</th>
-                                <th>Клиент</th>
-                                <th>Статус</th>
-                                <th>Управление</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTableBody"></tbody>
-                    </table>
-                </div>
-                <button class="modal-btn secondary-btn" style="margin-top:20px" onclick="openAdminSettings()">Назад</button>
-            </div>
-
-            <div id="addProductStep" style="display:none;">
-                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="prodTitle" class="modal-input" placeholder="Напр: Диски R18">
-                </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="prodCategory" class="modal-select">
-                        </select>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div class="form-group">
-                        <label>Цена (₽)</label>
-                        <input type="number" id="prodPrice" class="modal-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Старая цена (Акция)</label>
-                        <input type="number" id="prodOldPrice" class="modal-input">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Характеристики</label>
-                    <textarea id="prodSpecs" class="modal-input" style="height:80px; resize:none;" placeholder="Материал, размер, год..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Фото товара (до 4 шт.)</label>
-                    <input type="file" id="prodImages" accept="image/*" multiple hidden onchange="handleImageUpload(this)">
-                    <button class="modal-btn secondary-btn" onclick="document.getElementById('prodImages').click()">
-                        <i data-lucide="image" style="width:16px;"></i> Выбрать фото
-                    </button>
-                    <div class="image-previews" id="imagePreviews"></div>
-                </div>
-                <button class="modal-btn primary-btn" id="saveProdBtn" onclick="saveProduct()">Опубликовать товар</button>
-                <button class="modal-btn secondary-btn" onclick="openAdminSettings()">Отмена</button>
-            </div>
-
-            <div id="cartStep" style="display:none;">
-                <div style="overflow-x: auto;">
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Товар</th>
-                                <th>Кол-во</th>
-                                <th>Цена</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cartTableBody"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px; text-align: right; border-top: 1px solid #333; padding-top: 10px;">
-                    <h3>Итого: <span id="cartTotalSum">0</span> ₽</h3>
-                </div>
-                <button class="modal-btn primary-btn" onclick="showCheckoutForm()">Оформить сейчас</button>
-                <button class="modal-btn secondary-btn" onclick="closeModal()">Продолжить покупки</button>
-            </div>
-
-            <div id="checkoutStep" style="display:none;">
-                <div class="form-group">
-                    <label>Ваше Имя</label>
-                    <input type="text" id="orderClientName" class="modal-input" placeholder="Иван Иванов">
-                </div>
-                <div class="form-group">
-                    <label>Номер телефона</label>
-                    <input type="text" id="orderClientPhone" class="modal-input" value="+992 ">
-                </div>
-                <div class="form-group">
-                    <label>Адрес доставки</label>
-                    <input type="text" id="orderClientAddress" class="modal-input" placeholder="г. Душанбе, ул...">
-                </div>
-                <button class="modal-btn primary-btn" id="finalOrderBtn" onclick="submitFinalOrder()">Заказать</button>
-                <button class="modal-btn secondary-btn" onclick="showCart()">Назад в корзину</button>
-            </div>
-        </div>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-row1">
+    <div class="logo"><i class="fa-solid fa-diamond"></i> HORIZON</div>
+    <div class="searchwrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="searchInput" placeholder="Умный поиск товаров...">
+      <button class="iconbtn" id="photoSearchBtn" style="width:26px;height:26px;background:none;"><i class="fa-solid fa-camera" style="color:var(--text-dim)"></i></button>
     </div>
+    <button class="theme-switch" id="themeSwitch"><span class="knob"><i class="fa-solid fa-moon"></i></span></button>
+  </div>
+  <div class="topbar-row2">
+    <button class="pillbtn primary" id="openCatalogBtn"><i class="fa-solid fa-bars"></i> Каталог</button>
+    <button class="iconbtn" id="openCartBtn" style="width:auto;padding:8px 14px;border-radius:999px;display:flex;gap:6px;">
+      <i class="fa-solid fa-cart-shopping"></i><span class="badge" id="cartBadge" style="position:static;">0</span>
+    </button>
+    <button class="pillbtn" id="installTopBtn" style="display:none;"><i class="fa-solid fa-download"></i> Установить</button>
+    <button class="pillbtn" id="fullscreenBtn"><i class="fa-solid fa-expand"></i></button>
+  </div>
+</header>
 
-    <header>
-        <div class="header-top">
-            <a href="#" class="logo">Toyota Genuine</a>
-            <button class="catalog-btn" onclick="toggleCatalog()"><i data-lucide="layout-grid"></i> Каталог</button>
-            <div class="search-container">
-                <i data-lucide="search" class="search-icon-inside"></i>
-                <input type="text" class="smart-search" placeholder="Поиск запчастей...">
-            </div>
-            <div class="nav-actions">
-                <a href="#" class="icon-btn garage-btn"><i data-lucide="car"></i> Гараж</a>
-                <a href="#" class="icon-btn" onclick="openModal()"><i data-lucide="user"></i> <span id="userBtnText">Войти</span></a>
-                <a href="#" class="icon-btn cart-btn" onclick="showCart()"><i data-lucide="shopping-cart"></i> <span id="cartCounter">0</span></a>
-                <div class="premium-badge" id="premiumBadge">
-                    <i data-lucide="crown"></i> PREMIUM <span id="premiumExpire"></span>
-                </div>
-            </div>
+<!-- BANNER -->
+<div class="banner" id="bannerBox">
+  <div class="banner-track" id="bannerTrack"></div>
+  <div class="banner-dots" id="bannerDots"></div>
+</div>
+
+<div class="section-title" id="gridTitle">Все товары</div>
+<main class="grid" id="productGrid"></main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottomnav">
+  <button class="navbtn active" data-page="home"><i class="fa-solid fa-house"></i>Главная</button>
+  <button class="navbtn" data-page="favorites"><i class="fa-regular fa-heart"></i>Избранное</button>
+  <button class="navbtn" data-page="chat"><i class="fa-solid fa-comment-dots"></i>Чат<span class="badge hidden" id="chatBadge">0</span></button>
+  <button class="navbtn" data-page="about"><i class="fa-solid fa-circle-info"></i>О нас</button>
+  <button class="navbtn" data-page="profile"><i class="fa-regular fa-user"></i>Профиль</button>
+</nav>
+
+<!-- CONSULTANT -->
+<button class="consultant-fab" id="consultantFab"><i class="fa-solid fa-headset"></i></button>
+<div class="consultant-panel" id="consultantPanel">
+  <div class="consultant-head"><i class="fa-solid fa-robot"></i> Онлайн-консультант <button class="close-x" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;" id="closeConsultant"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="consultant-body" id="consultantBody"></div>
+  <div class="consultant-quick" id="consultantQuick"></div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner">
+  <i class="fa-solid fa-mobile-screen-button"></i>
+  <div class="txt"><b>Установите HORIZON MARKET</b><span>Быстрый доступ с главного экрана</span></div>
+  <button class="btn btn-primary btn-sm" id="installNowBtn">Установить</button>
+  <button class="close-x" id="closeInstallBanner"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="close-x" id="closeLightbox"><i class="fa-solid fa-xmark"></i></button>
+  <img id="lightboxImg">
+</div>
+
+<div id="modalsRoot">
+
+<!-- CATALOG DRAWER -->
+<div class="overlay" id="ovCatalog">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Каталог <button class="close-x" data-close="ovCatalog"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="catalog-drawer" id="catalogTree"></div>
+  </div>
+</div>
+
+<!-- AUTH CHOICE (on add to cart if guest) -->
+<div class="overlay center" id="ovAuthChoice">
+  <div class="sheet" style="border-radius:24px;">
+    <div class="sheet-title">Нужен вход <button class="close-x" data-close="ovAuthChoice"><i class="fa-solid fa-xmark"></i></button></div>
+    <p style="color:var(--text-dim);font-size:13px;margin:-6px 0 16px;">Чтобы добавить товар в корзину и оформить заказ, войдите или зарегистрируйтесь.</p>
+    <button class="btn btn-primary" style="margin-bottom:10px;" data-open="ovRegister" data-close="ovAuthChoice"><i class="fa-solid fa-user-plus"></i> Регистрация</button>
+    <button class="btn btn-outline" data-open="ovLogin" data-close="ovAuthChoice"><i class="fa-solid fa-right-to-bracket"></i> Вход</button>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="overlay" id="ovRegister">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Регистрация <button class="close-x" data-close="ovRegister"><i class="fa-solid fa-xmark"></i></button></div>
+    <label class="photo-upload" for="regPhotoInput"><i class="fa-solid fa-camera"></i><img id="regPhotoPreview" style="display:none;"></label>
+    <input type="file" accept="image/*" id="regPhotoInput" class="hidden">
+    <div class="field"><label>ФИО</label><input id="regFio" placeholder="Иванов Иван Иванович"></div>
+    <div class="field-row">
+      <div class="field" style="max-width:110px;">
+        <label>Код страны</label>
+        <select id="regCountry">
+          <option value="+7">🇷🇺 +7</option>
+          <option value="+992">🇹🇯 +992</option>
+          <option value="+998">🇺🇿 +998</option>
+        </select>
+      </div>
+      <div class="field"><label>Номер телефона</label><input id="regPhone" placeholder="901234567" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Пароль</label><input id="regPassword" type="password" placeholder="Придумайте пароль"></div>
+    <button class="btn btn-primary" id="regSubmitBtn"><i class="fa-solid fa-check"></i> Зарегистрироваться</button>
+    <a class="link-btn" data-open="ovLogin" data-close="ovRegister">Уже есть аккаунт? Войти</a>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="overlay" id="ovLogin">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Вход <button class="close-x" data-close="ovLogin"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="field-row">
+      <div class="field" style="max-width:110px;">
+        <label>Код страны</label>
+        <select id="loginCountry">
+          <option value="+7">🇷🇺 +7</option>
+          <option value="+992">🇹🇯 +992</option>
+          <option value="+998">🇺🇿 +998</option>
+        </select>
+      </div>
+      <div class="field"><label>Номер телефона</label><input id="loginPhone" placeholder="901234567" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Пароль</label><input id="loginPassword" type="password" placeholder="Пароль"></div>
+    <button class="btn btn-primary" id="loginSubmitBtn"><i class="fa-solid fa-right-to-bracket"></i> Войти</button>
+    <a class="link-btn" data-open="ovRegister" data-close="ovLogin">Нет аккаунта? Регистрация</a>
+    <a class="link-btn" data-open="ovAdminLogin" data-close="ovLogin">Вход для администратора</a>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="overlay center" id="ovAdminLogin">
+  <div class="sheet" style="border-radius:24px;">
+    <div class="sheet-title">Вход администратора <button class="close-x" data-close="ovAdminLogin"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="field"><label>Логин</label><input id="adminLoginInput" placeholder="admin"></div>
+    <div class="field"><label>Пароль</label><input id="adminPasswordInput" type="password" placeholder="12345"></div>
+    <button class="btn btn-primary" id="adminLoginSubmitBtn"><i class="fa-solid fa-shield-halved"></i> Войти</button>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL -->
+<div class="overlay" id="ovProduct">
+  <div class="sheet" style="padding-top:18px;">
+    <div class="sheet-title" style="position:sticky;top:0;background:var(--surface);z-index:2;">
+      <span id="pdName" style="font-size:16px;"></span>
+      <button class="close-x" data-close="ovProduct"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="pd-gallery" id="pdGallery"></div>
+    <div class="pd-rating" id="pdRating"></div>
+    <div class="pd-price-row">
+      <div class="pd-price" id="pdPrice"></div>
+      <div class="card-oldprice" id="pdOldPrice" style="font-size:14px;"></div>
+    </div>
+    <div id="pdCartControls"></div>
+    <table class="char-table" id="pdCharTable"></table>
+    <div class="section-title" style="padding:14px 0 6px;">Похожие товары</div>
+    <div class="related-scroll" id="pdRelated"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="overlay" id="ovCart">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Корзина <button class="close-x" data-close="ovCart"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="cartItems"></div>
+    <div class="cart-total-row"><span>Итого</span><span id="cartTotal">0 сомони</span></div>
+    <button class="btn btn-primary" id="checkoutOpenBtn"><i class="fa-solid fa-bag-shopping"></i> Оформить заказ</button>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="overlay" id="ovCheckout">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Оформление заказа <button class="close-x" data-close="ovCheckout"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="field"><label>Имя</label><input id="coName"></div>
+    <div class="field-row">
+      <div class="field" style="max-width:110px;"><label>Код</label>
+        <select id="coCountryCode"><option value="+7">🇷🇺 +7</option><option value="+992">🇹🇯 +992</option><option value="+998">🇺🇿 +998</option></select>
+      </div>
+      <div class="field"><label>Телефон</label><input id="coPhone"></div>
+    </div>
+    <div class="field"><label>Страна доставки</label>
+      <select id="coCountry"><option>Россия</option><option>Таджикистан</option><option>Узбекистан</option></select>
+    </div>
+    <div class="cart-total-row"><span>Сумма заказа</span><span id="coTotal">0 сомони</span></div>
+    <button class="btn btn-primary" id="coSubmitBtn"><i class="fa-solid fa-check"></i> Заказ</button>
+  </div>
+</div>
+
+<!-- CHAT LIST -->
+<div class="overlay" id="ovChatList">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Чаты с продавцами <button class="close-x" data-close="ovChatList"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="chatListBody"></div>
+  </div>
+</div>
+
+<!-- CHAT THREAD -->
+<div class="overlay" id="ovChatThread">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><span id="chatThreadName">Продавец</span><button class="close-x" data-close="ovChatThread"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="chat-thread">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-row">
+        <input id="chatInputMsg" placeholder="Сообщение...">
+        <button id="chatSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="overlay center" id="ovAbout">
+  <div class="sheet" style="border-radius:24px;text-align:center;">
+    <div class="sheet-title">О нас <button class="close-x" data-close="ovAbout"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="logo" style="justify-content:center;font-size:24px;"><i class="fa-solid fa-diamond"></i> HORIZON MARKET</div>
+    <p style="color:var(--text-dim);font-size:13px;">Современный маркетплейс. Лучшие товары по лучшим ценам, доставка по России, Таджикистану и Узбекистану.</p>
+    <div class="about-social" id="aboutSocialLinks"></div>
+  </div>
+</div>
+
+<!-- FAVORITES PAGE -->
+<div class="overlay" id="ovFavorites">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Избранное <button class="close-x" data-close="ovFavorites"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="grid" id="favGrid" style="padding:0;"></div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="overlay" id="ovProfile">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Профиль <button class="close-x" data-close="ovProfile"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="profileBody"></div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE -->
+<div class="overlay" id="ovEditProfile">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Редактировать профиль <button class="close-x" data-close="ovEditProfile"><i class="fa-solid fa-xmark"></i></button></div>
+    <label class="photo-upload" for="editPhotoInput"><i class="fa-solid fa-camera"></i><img id="editPhotoPreview" style="display:none;"></label>
+    <input type="file" accept="image/*" id="editPhotoInput" class="hidden">
+    <div class="field"><label>ФИО</label><input id="editFio"></div>
+    <div class="field"><label>Пароль</label><input id="editPassword" type="password" placeholder="Новый пароль (необязательно)"></div>
+    <button class="btn btn-primary" id="editProfileSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Сохранить</button>
+  </div>
+</div>
+
+<!-- ORDER HISTORY -->
+<div class="overlay" id="ovOrders">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">История заказов <button class="close-x" data-close="ovOrders"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="ordersBody"></div>
+  </div>
+</div>
+
+<!-- SELLER BOT SETTINGS -->
+<div class="overlay center" id="ovBotSettings">
+  <div class="sheet" style="border-radius:24px;">
+    <div class="sheet-title">Telegram-бот <button class="close-x" data-close="ovBotSettings"><i class="fa-solid fa-xmark"></i></button></div>
+    <p style="color:var(--text-dim);font-size:12px;margin-top:-8px;">Заказы будут приходить в этот бот. Создайте бота через @BotFather и укажите токен и Chat ID.</p>
+    <div class="field"><label>Bot Token</label><input id="botTokenInput"></div>
+    <div class="field"><label>Chat ID</label><input id="botChatIdInput"></div>
+    <button class="btn btn-primary" id="botSettingsSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Сохранить</button>
+  </div>
+</div>
+
+<!-- ADD/EDIT PRODUCT -->
+<div class="overlay" id="ovProductForm">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="productFormTitle">Новый товар <button class="close-x" data-close="ovProductForm"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="field"><label>Каталог</label><select id="pfCatalog"></select></div>
+    <div class="field"><label>Подкаталог</label><select id="pfSubcatalog"></select></div>
+    <div class="field"><label>Название товара</label><input id="pfName"></div>
+    <div class="field-row">
+      <div class="field"><label>Цена (сомони)</label><input id="pfPrice" type="number"></div>
+      <div class="field"><label>Старая цена (акция)</label><input id="pfOldPrice" type="number" placeholder="необязательно"></div>
+    </div>
+    <div class="field"><label>Описание</label><textarea id="pfDesc" rows="2"></textarea></div>
+    <div class="field">
+      <label>Характеристики</label>
+      <div id="pfCharsList"></div>
+      <button class="tiny-btn" id="pfAddCharBtn" type="button"><i class="fa-solid fa-plus"></i> Добавить характеристику</button>
+    </div>
+    <div class="field">
+      <label>Фото (до 4 шт.)</label>
+      <div class="img-upload-row" id="pfImagesRow">
+        <label class="img-thumb-add"><i class="fa-solid fa-plus"></i><input type="file" accept="image/*" multiple class="hidden" id="pfImagesInput"></label>
+      </div>
+    </div>
+    <div class="field" style="display:flex;align-items:center;gap:8px;">
+      <input type="checkbox" id="pfWholesaleEnabled" style="width:auto;">
+      <label style="margin:0;">Доступна продажа оптом</label>
+    </div>
+    <div id="pfWholesaleFields" style="display:none;">
+      <div class="field"><label>Характеристики опта</label><textarea id="pfWholesaleDesc" rows="2" placeholder="Например: в пачке 12 шт., упаковка коробками"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Цена за пачку (сомони)</label><input id="pfWholesalePrice" type="number"></div>
+        <div class="field"><label>Мин. кол-во пачек</label><input id="pfWholesaleMinQty" type="number" value="1"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="pfSaveBtn"><i class="fa-solid fa-check"></i> Сохранить товар</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="overlay" id="ovAdmin">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Панель администратора <button class="close-x" data-close="ovAdmin"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="admin-tabs" id="adminTabs">
+      <button class="admin-tab active" data-tab="catalogs">Каталоги</button>
+      <button class="admin-tab" data-tab="products">Товары</button>
+      <button class="admin-tab" data-tab="users">Пользователи</button>
+      <button class="admin-tab" data-tab="banners">Баннеры</button>
+      <button class="admin-tab" data-tab="social">Соцсети</button>
+      <button class="admin-tab" data-tab="security">Доступ</button>
+    </div>
+    <div id="adminTabBody"></div>
+  </div>
+</div>
+
+<!-- MY CATALOGS (seller) -->
+<div class="overlay" id="ovMyCatalogs">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Мои товары <button class="close-x" data-close="ovMyCatalogs"><i class="fa-solid fa-xmark"></i></button></div>
+    <button class="btn btn-primary" style="margin-bottom:12px;" id="sellerAddProductBtn"><i class="fa-solid fa-plus"></i> Добавить товар</button>
+    <div id="sellerProductsList"></div>
+  </div>
+</div>
+
+<!-- IMAGE SEARCH -->
+<div class="overlay center" id="ovImageSearch">
+  <div class="sheet" style="border-radius:24px;">
+    <div class="sheet-title">Поиск по фото <button class="close-x" data-close="ovImageSearch"><i class="fa-solid fa-xmark"></i></button></div>
+    <p style="color:var(--text-dim);font-size:12px;margin-top:-8px;">Загрузите фото — мы найдём похожие товары в каталоге.</p>
+    <label class="btn btn-outline" style="margin-bottom:12px;"><i class="fa-solid fa-image"></i> Выбрать фото<input type="file" accept="image/*" class="hidden" id="imageSearchInput"></label>
+    <div class="grid" id="imageSearchResults" style="padding:0;"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ============================================================
+   FIREBASE SETUP GATE
+   Никаких чужих ключей Firebase в коде больше нет.
+   При первом запуске сайт просит пароль администратора,
+   затем даёт ввести данные своего проекта Firebase.
+   Введённые данные сохраняются в этом браузере навсегда
+   (localStorage) и подгружаются при каждом следующем визите.
+   Изменить или удалить их можно только через панель
+   администратора (вкладка «Доступ»), то есть только зная
+   пароль администратора.
+   ============================================================ */
+window.HZ = window.HZ || {};
+const FB_CFG_KEY = 'hz_firebase_config';
+const FB_BOOTSTRAP_PASSWORD = '12345'; // пароль для самой первой настройки Firebase (смените админ-пароль в Доступ после запуска)
+
+function hzGetSavedFirebaseConfig(){
+  try{ return JSON.parse(localStorage.getItem(FB_CFG_KEY) || 'null'); }catch(e){ return null; }
+}
+function hzSaveFirebaseConfig(cfg){ localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfg)); }
+window.hzDeleteFirebaseConfig = function(){ localStorage.removeItem(FB_CFG_KEY); location.reload(); };
+
+function boot(){
+  const saved = hzGetSavedFirebaseConfig();
+  if(saved){
+    window.HZ.firebaseConfig = saved;
+    firebase.initializeApp(saved);
+    startApp();
+    return;
+  }
+  // Первый запуск — данных Firebase ещё нет, показываем экран настройки
+  const screen = document.getElementById('fbSetupScreen');
+  screen.style.display = 'flex';
+  const step1 = document.getElementById('fbSetupStep1');
+  const step2 = document.getElementById('fbSetupStep2');
+  document.getElementById('fbSetupPassBtn').addEventListener('click', ()=>{
+    const val = document.getElementById('fbSetupPass').value.trim();
+    const err = document.getElementById('fbSetupErr');
+    if(val !== FB_BOOTSTRAP_PASSWORD){ err.textContent = 'Неверный пароль администратора'; return; }
+    err.textContent = '';
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+  });
+  document.getElementById('fbSetupSaveBtn').addEventListener('click', ()=>{
+    const cfg = {
+      apiKey: document.getElementById('fbApiKey').value.trim(),
+      authDomain: document.getElementById('fbAuthDomain').value.trim(),
+      databaseURL: document.getElementById('fbDbUrl').value.trim(),
+      projectId: document.getElementById('fbProjectId').value.trim(),
+      storageBucket: document.getElementById('fbStorageBucket').value.trim(),
+      messagingSenderId: document.getElementById('fbMsgSenderId').value.trim(),
+      appId: document.getElementById('fbAppId').value.trim()
+    };
+    const err = document.getElementById('fbSetupErr2');
+    if(!cfg.apiKey || !cfg.projectId || !cfg.appId){ err.textContent = 'Заполните обязательные поля: apiKey, projectId, appId'; return; }
+    hzSaveFirebaseConfig(cfg);
+    location.reload();
+  });
+}
+
+function startApp(){
+"use strict";
+
+/* ============ FIREBASE INIT ============ */
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+/* ============ STATE ============ */
+const State = {
+  user: null,            // current logged-in user doc {id, role, fio, phone, ...} or {role:'admin'} for admin
+  catalogs: [],
+  subcatalogs: [],
+  products: [],
+  banners: [],
+  settings: {},
+  cart: [],               // [{productId, qty}]
+  activeProductId: null,
+  activeChatSellerId: null,
+  seenProductIds: new Set(),
+  firstProductsLoad: true,
+  chatUnsub: null,
+};
+
+/* ============ HELPERS ============ */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const fmt = (n) => (Math.round(Number(n)||0)).toLocaleString('ru-RU') + ' сомони';
+const uid = () => 'id_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+function toast(title, sub, icon){
+  const wrap = $('#toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<i class="fa-solid ${icon||'fa-sparkles'}"></i><div><div class="toast-title">${title}</div><div class="toast-sub">${sub||''}</div></div>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(-10px)'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 3800);
+}
+
+function openOv(id){ const el = document.getElementById(id); if(el){ el.classList.add('open'); } }
+function closeOv(id){ const el = document.getElementById(id); if(el){ el.classList.remove('open'); } }
+
+document.addEventListener('click', (e)=>{
+  const opener = e.target.closest('[data-open]');
+  if(opener){ openOv(opener.getAttribute('data-open')); }
+  const closer = e.target.closest('[data-close]');
+  if(closer){ closeOv(closer.getAttribute('data-close')); }
+  if(e.target.classList && e.target.classList.contains('overlay')){ e.target.classList.remove('open'); }
+});
+
+/* Image compression: resize + jpeg compress, returns dataURL */
+function compressImage(file, maxSize=900, quality=0.72){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > h && w > maxSize){ h = Math.round(h*maxSize/w); w = maxSize; }
+        else if(h >= w && h > maxSize){ w = Math.round(w*maxSize/h); h = maxSize; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* Perceptual average-hash (8x8) for best-effort "search by photo" */
+function imageHash(dataUrlOrImg){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = ()=>{
+      const c = document.createElement('canvas'); c.width=8; c.height=8;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img,0,0,8,8);
+      const data = ctx.getImageData(0,0,8,8).data;
+      let gray = [], sum=0;
+      for(let i=0;i<64;i++){
+        const g = (data[i*4]+data[i*4+1]+data[i*4+2])/3;
+        gray.push(g); sum+=g;
+      }
+      const avg = sum/64;
+      let hash = '';
+      for(let i=0;i<64;i++) hash += gray[i] > avg ? '1':'0';
+      resolve(hash);
+    };
+    img.onerror = ()=>resolve(null);
+    img.src = dataUrlOrImg;
+  });
+}
+function hammingDist(a,b){
+  if(!a||!b||a.length!==b.length) return 64;
+  let d=0; for(let i=0;i<a.length;i++) if(a[i]!==b[i]) d++;
+  return d;
+}
+
+async function sendTelegram(token, chatId, text){
+  if(!token || !chatId) return;
+  try{
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({chat_id: chatId, text, parse_mode:'HTML'})
+    });
+  }catch(e){ console.warn('Telegram error', e); }
+}
+
+function localUser(){
+  try{ return JSON.parse(localStorage.getItem('hz_user')||'null'); }catch(e){ return null; }
+}
+function saveLocalUser(u){ localStorage.setItem('hz_user', JSON.stringify(u)); }
+function clearLocalUser(){ localStorage.removeItem('hz_user'); }
+
+/* ============ THEME ============ */
+function applyTheme(t){
+  document.body.setAttribute('data-theme', t);
+  localStorage.setItem('hz_theme', t);
+  $('#themeColorMeta').setAttribute('content', t==='dark' ? '#121018' : '#6C2BD9');
+}
+$('#themeSwitch').addEventListener('click', ()=>{
+  const cur = document.body.getAttribute('data-theme');
+  applyTheme(cur==='dark' ? 'light' : 'dark');
+});
+applyTheme(localStorage.getItem('hz_theme') || 'light');
+
+/* ============ FULLSCREEN ============ */
+$('#fullscreenBtn').addEventListener('click', ()=>{
+  if(!document.fullscreenElement){ document.documentElement.requestFullscreen?.(); }
+  else{ document.exitFullscreen?.(); }
+});
+
+/* ============ PWA MANIFEST + INSTALL ============ */
+(function setupManifest(){
+  const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='gm' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF4FA3'/%3E%3Cstop offset='1' stop-color='%23E31C79'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23gm)'/%3E%3Cpolygon points='256,96 306,158 256,220 206,158' fill='%23fff'/%3E%3Ctext x='256' y='372' font-family='Georgia, Times New Roman, serif' font-style='italic' font-weight='700' font-size='168' fill='%23fff' text-anchor='middle' letter-spacing='-6'%3EHM%3C/text%3E%3C/svg%3E";
+  const manifest = {
+    name: "HORIZON MARKET",
+    short_name: "HORIZON",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#FF4FA3",
+    theme_color: "#6C2BD9",
+    icons: [
+      {src:iconSvg, sizes:"192x192", type:"image/svg+xml", purpose:"any"},
+      {src:iconSvg, sizes:"512x512", type:"image/svg+xml", purpose:"any"},
+      {src:iconSvg, sizes:"512x512", type:"image/svg+xml", purpose:"maskable"}
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest'; link.href = url;
+  document.head.appendChild(link);
+})();
+let deferredInstallPrompt = null;
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream; }
+function isStandalone(){ return (window.navigator.standalone === true) || window.matchMedia('(display-mode: standalone)').matches; }
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault(); deferredInstallPrompt = e;
+  $('#installTopBtn').style.display = 'flex';
+  if(!localStorage.getItem('hz_install_dismissed')) $('#installBanner').classList.add('show');
+});
+async function doInstall(){
+  if(!deferredInstallPrompt){
+    if(isIOS()){ toast('Установка на iPhone', 'Нажмите "Поделиться" внизу браузера, затем "На экран «Домой»"', 'fa-share-from-square'); }
+    else{ toast('Установка', 'Откройте меню браузера → "Добавить на главный экран"', 'fa-mobile-screen-button'); }
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  $('#installBanner').classList.remove('show');
+  $('#installTopBtn').style.display = 'none';
+}
+$('#installTopBtn').addEventListener('click', doInstall);
+$('#installNowBtn').addEventListener('click', doInstall);
+$('#closeInstallBanner').addEventListener('click', ()=>{ $('#installBanner').classList.remove('show'); localStorage.setItem('hz_install_dismissed','1'); });
+/* iOS Safari doesn't fire beforeinstallprompt — show manual instructions instead */
+function initInstallPrompts(){
+  if(isStandalone()) return;
+  if(localStorage.getItem('hz_install_dismissed')) return;
+  if(isIOS()){
+    const banner = $('#installBanner');
+    banner.querySelector('.txt b').textContent = 'Установите HORIZON MARKET';
+    banner.querySelector('.txt span').textContent = 'Нажмите "Поделиться" ⬆️ внизу экрана → "На экран «Домой»"';
+    $('#installNowBtn').style.display = 'none';
+    setTimeout(()=>{ banner.classList.add('show'); }, 2000);
+  }
+}
+
+/* ============ NAV / PAGES ============ */
+$$('.navbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    $$('.navbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const page = btn.getAttribute('data-page');
+    if(page==='home'){ closeAllOverlays(); }
+    else if(page==='favorites'){ renderFavorites(); openOv('ovFavorites'); }
+    else if(page==='chat'){ openChatList(); }
+    else if(page==='about'){ renderAbout(); openOv('ovAbout'); }
+    else if(page==='profile'){ renderProfile(); openOv('ovProfile'); }
+  });
+});
+function closeAllOverlays(){ $$('.overlay').forEach(o=>o.classList.remove('open')); }
+
+/* ============ CATALOG DRAWER ============ */
+$('#openCatalogBtn').addEventListener('click', ()=>{ renderCatalogTree(); openOv('ovCatalog'); });
+function renderCatalogTree(){
+  const tree = $('#catalogTree');
+  if(State.catalogs.length===0){ tree.innerHTML = '<div class="empty-state"><i class="fa-solid fa-boxes-stacked"></i><div>Каталоги ещё не добавлены</div></div>'; return; }
+  tree.innerHTML = State.catalogs.map(cat=>{
+    const subs = State.subcatalogs.filter(s=>s.catalogId===cat.id);
+    return `<div class="cat-group">
+      <div class="cat-group-title"><span>${cat.name}</span><i class="fa-solid fa-chevron-right" style="font-size:11px;color:var(--text-dim)"></i></div>
+      <div>
+        <span class="subcat-chip" data-cat="${cat.id}" data-sub="">Все в «${cat.name}»</span>
+        ${subs.map(s=>`<span class="subcat-chip" data-cat="${cat.id}" data-sub="${s.id}">${s.name}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  tree.querySelectorAll('.subcat-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const catId = chip.getAttribute('data-cat'), subId = chip.getAttribute('data-sub');
+      filterAndRenderGrid({catalogId:catId, subcatalogId: subId||null});
+      closeOv('ovCatalog');
+    });
+  });
+}
+
+/* ============ BANNER ============ */
+let bannerIdx = 0, bannerTimer = null;
+function renderBanner(){
+  const track = $('#bannerTrack'), dots = $('#bannerDots');
+  const banners = (State.settings.banners||[]).slice(0,4);
+  if(banners.length===0){
+    $('#bannerBox').style.display='none'; return;
+  }
+  $('#bannerBox').style.display='block';
+  track.innerHTML = banners.map(b=>`<div class="banner-slide"><img src="${b}"></div>`).join('');
+  dots.innerHTML = banners.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('');
+  bannerIdx = 0;
+  clearInterval(bannerTimer);
+  if(banners.length>1){
+    bannerTimer = setInterval(()=>{
+      bannerIdx = (bannerIdx+1)%banners.length;
+      track.style.transform = `translateX(-${bannerIdx*100}%)`;
+      dots.querySelectorAll('span').forEach((d,i)=>d.classList.toggle('active', i===bannerIdx));
+    }, 4000);
+  }
+}
+
+/* ============ PRODUCT GRID ============ */
+let currentFilter = {catalogId:null, subcatalogId:null, search:''};
+function filterAndRenderGrid(f){
+  currentFilter = Object.assign(currentFilter, f);
+  let list = State.products.slice();
+  if(currentFilter.catalogId) list = list.filter(p=>p.catalogId===currentFilter.catalogId);
+  if(currentFilter.subcatalogId) list = list.filter(p=>p.subcatalogId===currentFilter.subcatalogId);
+  if(currentFilter.search){
+    const q = currentFilter.search.toLowerCase();
+    list = list.filter(p=>(p.name||'').toLowerCase().includes(q));
+  }
+  const cat = State.catalogs.find(c=>c.id===currentFilter.catalogId);
+  $('#gridTitle').textContent = currentFilter.search ? `Результаты поиска: "${currentFilter.search}"` : (cat ? cat.name : 'Все товары');
+  renderGrid(list, '#productGrid');
+}
+function cardHtml(p){
+  const inCart = State.cart.find(c=>c.productId===p.id);
+  const isFav = State.user && (State.user.favorites||[]).includes(p.id);
+  const img = (p.images && p.images[0]) || '';
+  const sale = p.oldPrice && Number(p.oldPrice) > Number(p.price) ? Math.round(100 - (p.price/p.oldPrice*100)) : 0;
+  return `<div class="card" data-id="${p.id}">
+    <div class="card-img" data-openpd="${p.id}">
+      ${img?`<img src="${img}" loading="lazy">`:'<div class="empty-state" style="padding:30px 0;"><i class="fa-solid fa-image"></i></div>'}
+      ${sale>0?`<div class="sale-ribbon">-${sale}%</div>`:''}
+      <button class="fav-toggle ${isFav?'active':''}" data-fav="${p.id}"><i class="fa-${isFav?'solid':'regular'} fa-heart"></i></button>
+    </div>
+    <div class="card-body">
+      <div class="card-rating"><i class="fa-solid fa-star"></i> ${(p.rating||5).toFixed(1)} <span>· ${p.ratingCount||0} отзывов</span></div>
+      <div class="card-name" data-openpd="${p.id}">${p.name}</div>
+      <div class="card-prices"><span class="card-price">${fmt(p.price)}</span>${p.oldPrice?`<span class="card-oldprice">${fmt(p.oldPrice)}</span>`:''}</div>
+      <div class="card-footer">
+        <span></span>
+        ${inCart ? `<div class="qty-stepper"><button data-qty="-1" data-id="${p.id}">-</button><span>${inCart.qty}</span><button data-qty="1" data-id="${p.id}">+</button></div>`
+                 : `<button class="cart-add-btn" data-addcart="${p.id}"><i class="fa-solid fa-plus"></i></button>`}
+      </div>
+    </div>
+  </div>`;
+}
+function renderGrid(list, sel){
+  const grid = $(sel);
+  if(!list || list.length===0){ grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-box-open"></i><div>Товары не найдены</div></div>'; return; }
+  grid.innerHTML = list.map(cardHtml).join('');
+}
+document.addEventListener('click', (e)=>{
+  const openBtn = e.target.closest('[data-openpd]');
+  if(openBtn){ openProductDetail(openBtn.getAttribute('data-openpd')); }
+  const favBtn = e.target.closest('[data-fav]');
+  if(favBtn){ e.stopPropagation(); toggleFavorite(favBtn.getAttribute('data-fav')); }
+  const addBtn = e.target.closest('[data-addcart]');
+  if(addBtn){ e.stopPropagation(); addToCart(addBtn.getAttribute('data-addcart')); }
+  const qtyBtn = e.target.closest('[data-qty]');
+  if(qtyBtn){ e.stopPropagation(); changeCartQty(qtyBtn.getAttribute('data-id'), parseInt(qtyBtn.getAttribute('data-qty')), qtyBtn.getAttribute('data-wholesale')==='1'); }
+  const wsToggle = e.target.closest('[data-toggle-wholesale]');
+  if(wsToggle){ e.stopPropagation(); const panel = $('#pdWholesalePanel'); if(panel) panel.style.display = panel.style.display==='none' ? 'block' : 'none'; }
+  const wsPack = e.target.closest('[data-wpack]');
+  if(wsPack){
+    e.stopPropagation();
+    const p = State.products.find(pp=>pp.id===wsPack.getAttribute('data-pid'));
+    if(p && p.wholesale){
+      const min = p.wholesale.minQty||1;
+      const span = $('#pdWholesaleQty');
+      let v = (parseInt(span.textContent)||min) + parseInt(wsPack.getAttribute('data-wpack'));
+      if(v<min) v=min;
+      span.textContent = v;
+      const totalEl = $('#pdWholesaleTotal'); if(totalEl) totalEl.textContent = fmt(p.wholesale.price*v);
+    }
+  }
+  const wsAdd = e.target.closest('[data-addwholesale]');
+  if(wsAdd){
+    e.stopPropagation();
+    const qty = parseInt($('#pdWholesaleQty').textContent)||1;
+    addWholesaleToCart(wsAdd.getAttribute('data-addwholesale'), qty);
+  }
+});
+
+let searchDebounce;
+$('#searchInput').addEventListener('input', (e)=>{
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(()=>filterAndRenderGrid({search:e.target.value, catalogId:null, subcatalogId:null}), 250);
+});
+
+/* ============ FAVORITES ============ */
+function toggleFavorite(pid){
+  if(!State.user){ openOv('ovAuthChoice'); return; }
+  const favs = new Set(State.user.favorites||[]);
+  favs.has(pid) ? favs.delete(pid) : favs.add(pid);
+  State.user.favorites = Array.from(favs);
+  saveLocalUser(State.user);
+  if(State.user.role==='client' && State.user.docId){ db.collection('users').doc(State.user.docId).update({favorites: State.user.favorites}).catch(()=>{}); }
+  filterAndRenderGrid({});
+  renderFavorites();
+}
+function renderFavorites(){
+  const favIds = new Set((State.user && State.user.favorites) || []);
+  const list = State.products.filter(p=>favIds.has(p.id));
+  renderGrid(list, '#favGrid');
+}
+
+/* ============ CART ============ */
+function addToCart(pid){
+  if(!State.user){ openOv('ovAuthChoice'); return; }
+  const existing = State.cart.find(c=>c.productId===pid && !c.wholesale);
+  if(existing) existing.qty++; else State.cart.push({productId:pid, qty:1});
+  persistCart(); updateCartBadge(); filterAndRenderGrid({});
+  toast('Добавлено в корзину', '', 'fa-cart-shopping');
+}
+function addWholesaleToCart(pid, qtyPacks){
+  if(!State.user){ openOv('ovAuthChoice'); return; }
+  const p = State.products.find(pp=>pp.id===pid);
+  if(!p || !p.wholesale || !p.wholesale.enabled) return;
+  const min = p.wholesale.minQty||1;
+  const qty = Math.max(min, qtyPacks||min);
+  const existing = State.cart.find(c=>c.productId===pid && c.wholesale);
+  if(existing) existing.qty = qty; else State.cart.push({productId:pid, qty, wholesale:true});
+  persistCart(); updateCartBadge(); filterAndRenderGrid({});
+  toast('Оптовый заказ добавлен в корзину', '', 'fa-boxes-stacked');
+}
+function changeCartQty(pid, delta, wholesale){
+  wholesale = !!wholesale;
+  const item = State.cart.find(c=>c.productId===pid && !!c.wholesale===wholesale);
+  if(!item) return;
+  const p = State.products.find(pp=>pp.id===pid);
+  const min = wholesale && p && p.wholesale ? (p.wholesale.minQty||1) : 1;
+  item.qty += delta;
+  if(wholesale ? item.qty<min : item.qty<=0) State.cart = State.cart.filter(c=>!(c.productId===pid && !!c.wholesale===wholesale));
+  persistCart(); updateCartBadge(); filterAndRenderGrid({}); renderCart();
+}
+function persistCart(){ localStorage.setItem('hz_cart_'+(State.user?State.user.docId||'guest':'guest'), JSON.stringify(State.cart)); }
+function loadCart(){ try{ State.cart = JSON.parse(localStorage.getItem('hz_cart_'+(State.user?State.user.docId||'guest':'guest'))||'[]'); }catch(e){ State.cart=[]; } updateCartBadge(); }
+function updateCartBadge(){ $('#cartBadge').textContent = State.cart.reduce((s,c)=>s+c.qty,0); }
+function cartTotal(){
+  return State.cart.reduce((sum,c)=>{
+    const p = State.products.find(pp=>pp.id===c.productId); if(!p) return sum;
+    const price = (c.wholesale && p.wholesale) ? p.wholesale.price : p.price;
+    return sum + price*c.qty;
+  },0);
+}
+$('#openCartBtn').addEventListener('click', ()=>{ if(!State.user){ openOv('ovAuthChoice'); return; } renderCart(); openOv('ovCart'); });
+function renderCart(){
+  const wrap = $('#cartItems');
+  if(State.cart.length===0){ wrap.innerHTML = '<div class="empty-state"><i class="fa-solid fa-cart-shopping"></i><div>Корзина пуста</div></div>'; }
+  else{
+    wrap.innerHTML = State.cart.map(c=>{
+      const p = State.products.find(pp=>pp.id===c.productId);
+      if(!p) return '';
+      const seller = State.sellersCache && State.sellersCache[p.sellerId];
+      const isW = !!c.wholesale;
+      const price = isW && p.wholesale ? p.wholesale.price : p.price;
+      const min = isW && p.wholesale ? (p.wholesale.minQty||1) : 1;
+      const wAttr = isW ? ' data-wholesale="1"' : '';
+      return `<div class="cart-item">
+        <img src="${(p.images&&p.images[0])||''}">
+        <div class="cart-item-body">
+          <div class="cart-item-name">${p.name}${isW?' <span style="color:var(--magenta);font-size:11px;font-weight:700;">ОПТ</span>':''}</div>
+          <div class="cart-item-seller">Продавец: ${seller?seller.fio:'HORIZON MARKET'}${isW?` · ${fmt(price)}/пачка`:''}</div>
+          <div class="qty-stepper" style="width:fit-content;"><button data-qty="-1" data-id="${p.id}"${wAttr}>-</button><span>${c.qty}</span><button data-qty="1" data-id="${p.id}"${wAttr}>+</button></div>
         </div>
-    </header>
+        <div style="text-align:right;">
+          <div style="font-weight:800;font-size:13px;">${fmt(price*c.qty)}</div>
+          <div class="remove-x" data-qty="-${c.qty}" data-id="${p.id}"${wAttr}>Удалить</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  $('#cartTotal').textContent = fmt(cartTotal());
+}
+$('#checkoutOpenBtn').addEventListener('click', ()=>{
+  if(State.cart.length===0){ toast('Корзина пуста','','fa-circle-exclamation'); return; }
+  $('#coName').value = State.user.fio||'';
+  $('#coPhone').value = State.user.phone||'';
+  $('#coCountryCode').value = State.user.countryCode||'+7';
+  $('#coTotal').textContent = fmt(cartTotal());
+  closeOv('ovCart'); openOv('ovCheckout');
+});
+$('#coSubmitBtn').addEventListener('click', async ()=>{
+  const name = $('#coName').value.trim(), phone = $('#coPhone').value.trim(), code = $('#coCountryCode').value, country = $('#coCountry').value;
+  if(!name || !phone){ toast('Заполните имя и телефон','','fa-circle-exclamation'); return; }
+  const items = State.cart.map(c=>{
+    const p = State.products.find(pp=>pp.id===c.productId);
+    const price = (c.wholesale && p && p.wholesale) ? p.wholesale.price : (p?p.price:0);
+    return {productId:c.productId, name:p?p.name:'', price, qty:c.qty, sellerId:p?p.sellerId:null, wholesale: !!c.wholesale};
+  });
+  const total = cartTotal();
+  const order = {clientId: State.user.docId||'guest', clientName:name, clientPhone: code+phone, country, items, total, status:'Новый', createdAt: firebase.firestore.FieldValue.serverTimestamp()};
+  try{
+    await db.collection('orders').add(order);
+  }catch(e){ console.warn(e); }
 
-    <div class="container" id="productsContainer"></div>
+  // group items by seller, notify each seller's bot + admin bot
+  const bySeller = {};
+  items.forEach(it=>{ (bySeller[it.sellerId] = bySeller[it.sellerId]||[]).push(it); });
+  for(const sellerId in bySeller){
+    const seller = State.sellersCache ? State.sellersCache[sellerId] : null;
+    const list = bySeller[sellerId].map(i=>`• ${i.wholesale?'[ОПТ] ':''}${i.name} x${i.qty} — ${fmt(i.price*i.qty)}`).join('\n');
+    const text = `🛍️ <b>Новый заказ HORIZON MARKET</b>\n👤 ${name}\n📞 ${code}${phone}\n🌍 ${country}\n\n${list}\n\n💰 Итого: ${fmt(total)}`;
+    if(seller && seller.botToken && seller.botChatId) sendTelegram(seller.botToken, seller.botChatId, text);
+    if(State.settings.adminBotToken && State.settings.adminBotChatId) sendTelegram(State.settings.adminBotToken, State.settings.adminBotChatId, text);
+    // auto seller "thanks" chat message to client
+    if(sellerId){
+      const chatId = [State.user.docId, sellerId].sort().join('_');
+      db.collection('chats').doc(chatId).collection('messages').add({
+        senderId: sellerId, text: 'Спасибо за заказ! 🙏 Пожалуйста, подождите немного, мы скоро свяжемся с вами.',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(()=>{});
+      db.collection('chats').doc(chatId).set({clientId: State.user.docId, sellerId, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true}).catch(()=>{});
+    }
+  }
+  State.cart = []; persistCart(); updateCartBadge();
+  closeOv('ovCheckout');
+  toast('Заказ оформлен!', 'Продавец скоро с вами свяжется', 'fa-circle-check');
+});
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDkPy6cVOQvhJVMpeLe9YZuh2viP7R4AWw",
-            databaseURL: "https://toyota-3a4ef-default-rtdb.firebaseio.com/",
-            projectId: "toyota-3a4ef",
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+/* ============ PRODUCT DETAIL ============ */
+function openProductDetail(pid){
+  const p = State.products.find(pp=>pp.id===pid);
+  if(!p) return;
+  State.activeProductId = pid;
+  $('#pdName').textContent = p.name;
+  $('#pdGallery').innerHTML = (p.images||[]).map(img=>`<img src="${img}" data-lightbox="${img}">`).join('') || '<div class="empty-state"><i class="fa-solid fa-image"></i></div>';
+  $('#pdPrice').textContent = fmt(p.price);
+  $('#pdOldPrice').textContent = p.oldPrice ? fmt(p.oldPrice) : '';
+  $('#pdRating').innerHTML = `<i class="fa-solid fa-star" style="color:#FFA800"></i> ${(p.rating||5).toFixed(1)} · ${p.ratingCount||0} отзывов`;
+  const chars = p.characteristics||[];
+  $('#pdCharTable').innerHTML = (p.desc ? `<tr><td colspan="2" style="color:var(--text)">${p.desc}</td></tr>` : '') +
+    chars.map(c=>`<tr><td>${c.key}</td><td>${c.value}</td></tr>`).join('');
+  const inCart = State.cart.find(c=>c.productId===pid && !c.wholesale);
+  const seller = State.sellersCache ? State.sellersCache[p.sellerId] : null;
+  const sellerName = seller ? seller.fio : 'HORIZON MARKET';
+  const hasWholesale = !!(p.wholesale && p.wholesale.enabled);
+  const inCartWholesale = State.cart.find(c=>c.productId===pid && c.wholesale);
+  const wMin = hasWholesale ? (p.wholesale.minQty||1) : 1;
+  const wStartQty = inCartWholesale ? Math.max(wMin, inCartWholesale.qty) : wMin;
+  $('#pdCartControls').innerHTML = `<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+    ${inCart
+      ? `<div class="qty-stepper" style="width:fit-content;"><button data-qty="-1" data-id="${pid}">-</button><span>${inCart.qty}</span><button data-qty="1" data-id="${pid}">+</button></div>`
+      : `<button class="btn btn-primary" data-addcart="${pid}"><i class="fa-solid fa-cart-plus"></i> В корзину</button>`}
+    ${hasWholesale ? `<button class="btn btn-outline" data-toggle-wholesale="1"><i class="fa-solid fa-boxes-stacked"></i> Купить оптом</button>` : ''}
+    ${p.sellerId ? `<button class="btn btn-outline" style="width:auto;padding:14px 16px;" data-chat-seller="${p.sellerId}" data-seller-name="${sellerName}"><i class="fa-solid fa-comment-dots"></i></button>` : ''}
+  </div>
+  ${hasWholesale ? `<div id="pdWholesalePanel" style="display:none;margin-bottom:14px;padding:14px;background:var(--surface-2);border-radius:14px;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px;"><i class="fa-solid fa-boxes-stacked"></i> Характеристики опта</div>
+      <div style="color:var(--text-dim);font-size:13px;margin-bottom:12px;white-space:pre-line;">${p.wholesale.desc||'—'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px;flex-wrap:wrap;">
+        <div><div style="font-weight:800;font-size:17px;">${fmt(p.wholesale.price)}</div><div style="color:var(--text-dim);font-size:11px;">за пачку</div></div>
+        <div class="qty-stepper" style="width:fit-content;">
+          <button data-wpack="-1" data-pid="${pid}">-</button><span id="pdWholesaleQty">${wStartQty}</span><button data-wpack="1" data-pid="${pid}">+</button>
+        </div>
+      </div>
+      <div style="color:var(--text-dim);font-size:11.5px;margin-bottom:10px;">Минимальный заказ: ${wMin} пачек · Итого: <span id="pdWholesaleTotal">${fmt(p.wholesale.price*wStartQty)}</span></div>
+      <button class="btn btn-primary" data-addwholesale="${pid}"><i class="fa-solid fa-cart-plus"></i> Добавить оптом в корзину</button>
+    </div>` : ''}`;
+  const related = State.products.filter(pp=>pp.id!==pid && pp.subcatalogId===p.subcatalogId).slice(0,10);
+  $('#pdRelated').innerHTML = related.map(cardHtml).join('') || '<div style="color:var(--text-dim);font-size:12px;">Похожих товаров нет</div>';
+  openOv('ovProduct');
+}
+document.addEventListener('click', (e)=>{
+  const lb = e.target.closest('[data-lightbox]');
+  if(lb){ $('#lightboxImg').src = lb.getAttribute('data-lightbox'); $('#lightbox').classList.add('open'); }
+});
+$('#closeLightbox').addEventListener('click', ()=>$('#lightbox').classList.remove('open'));
 
-        const TG_TOKEN = "8681756976:AAHIRkRSGduktZCfUeChoABowJ6VH8cwVlg"; 
-        const TG_CHAT_ID = "8506743201";
+/* ============ AUTH: REGISTER / LOGIN ============ */
+let regPhotoData = '';
+$('#regPhotoInput').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  regPhotoData = await compressImage(f, 400, 0.7);
+  const prev = $('#regPhotoPreview'); prev.src = regPhotoData; prev.style.display='block';
+});
+$('#regSubmitBtn').addEventListener('click', async ()=>{
+  const fio = $('#regFio').value.trim();
+  const code = $('#regCountry').value;
+  const phone = $('#regPhone').value.trim();
+  const pass = $('#regPassword').value;
+  if(!fio || !phone || !pass){ toast('Заполните все поля','','fa-circle-exclamation'); return; }
+  const fullPhone = code+phone;
+  const existing = await db.collection('users').where('fullPhone','==',fullPhone).limit(1).get();
+  if(!existing.empty){ toast('Этот номер уже зарегистрирован','Попробуйте войти','fa-circle-exclamation'); return; }
+  const docRef = await db.collection('users').add({
+    fio, countryCode:code, phone, fullPhone, password: pass, photo: regPhotoData||'',
+    role:'client', favorites:[], botToken:'', botChatId:'', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  const userObj = {docId:docRef.id, fio, countryCode:code, phone, fullPhone, role:'client', favorites:[], photo:regPhotoData||''};
+  State.user = userObj; saveLocalUser(userObj);
+  closeOv('ovRegister'); loadCart(); refreshUserUI();
+  toast('Добро пожаловать!', fio, 'fa-circle-check');
+});
+$('#loginSubmitBtn').addEventListener('click', async ()=>{
+  const code = $('#loginCountry').value, phone = $('#loginPhone').value.trim(), pass = $('#loginPassword').value;
+  const fullPhone = code+phone;
+  const snap = await db.collection('users').where('fullPhone','==',fullPhone).limit(1).get();
+  if(snap.empty){ toast('Пользователь не найден','','fa-circle-exclamation'); return; }
+  const docSnap = snap.docs[0]; const data = docSnap.data();
+  if(data.password !== pass){ toast('Неверный пароль','','fa-circle-exclamation'); return; }
+  const userObj = Object.assign({docId:docSnap.id}, data);
+  State.user = userObj; saveLocalUser(userObj);
+  closeOv('ovLogin'); loadCart(); refreshUserUI();
+  toast('Вы вошли', data.fio, 'fa-circle-check');
+});
+$('#adminLoginSubmitBtn').addEventListener('click', ()=>{
+  const login = $('#adminLoginInput').value.trim(), pass = $('#adminPasswordInput').value;
+  const validLogin = State.settings.adminLogin || 'admin';
+  const validPass = State.settings.adminPassword || '12345';
+  if(login===validLogin && pass===validPass){
+    const userObj = {role:'admin', fio:'Администратор'};
+    State.user = userObj; saveLocalUser(userObj);
+    closeOv('ovAdminLogin'); loadCart(); refreshUserUI();
+    toast('Добро пожаловать, Админ', '', 'fa-shield-halved');
+  } else { toast('Неверный логин или пароль','','fa-circle-exclamation'); }
+});
+function logout(){ State.user=null; clearLocalUser(); loadCart(); refreshUserUI(); closeAllOverlays(); toast('Вы вышли','','fa-right-from-bracket'); }
 
-        let uploadedImages = []; 
-        let cart = []; 
-        let currentEditProductId = null; // Для редактирования
-        lucide.createIcons();
+/* ============ PROFILE ============ */
+function refreshUserUI(){ filterAndRenderGrid({}); renderProfile(); updateChatBadgeVisibility(); }
+function renderProfile(){
+  const body = $('#profileBody');
+  if(!State.user){
+    body.innerHTML = `<div class="empty-state"><i class="fa-solid fa-user"></i><div>Вы не авторизованы</div></div>
+    <button class="btn btn-primary" style="margin-top:10px;" data-open="ovRegister"><i class="fa-solid fa-user-plus"></i> Регистрация</button>
+    <button class="btn btn-outline" style="margin-top:10px;" data-open="ovLogin"><i class="fa-solid fa-right-to-bracket"></i> Вход</button>`;
+    return;
+  }
+  const u = State.user;
+  const roleLabel = u.role==='admin' ? 'Администратор' : u.role==='seller' ? 'Продавец' : 'Покупатель';
+  let menu = `<div class="menu-item" data-open="ovEditProfile"><i class="fa-solid fa-pen"></i> Редактировать профиль <i class="fa-solid fa-chevron-right"></i></div>`;
+  if(u.role==='client' || u.role==='seller'){
+    menu += `<div class="menu-item" id="openOrdersBtn"><i class="fa-solid fa-receipt"></i> История заказов <i class="fa-solid fa-chevron-right"></i></div>`;
+  }
+  if(u.role==='seller'){
+    menu += `<div class="menu-item" data-open="ovMyCatalogs" id="mySellerProductsBtn"><i class="fa-solid fa-store"></i> Мои товары (+) <i class="fa-solid fa-chevron-right"></i></div>`;
+    menu += `<div class="menu-item" id="openBotSettingsBtn"><i class="fa-brands fa-telegram"></i> Telegram-бот <i class="fa-solid fa-chevron-right"></i></div>`;
+  }
+  if(u.role==='admin'){
+    menu += `<div class="menu-item" data-open="ovAdmin" id="openAdminPanelBtn"><i class="fa-solid fa-user-shield"></i> Панель администратора <i class="fa-solid fa-chevron-right"></i></div>`;
+    menu += `<div class="menu-item" id="openBotSettingsBtn"><i class="fa-brands fa-telegram"></i> Telegram-бот (главный) <i class="fa-solid fa-chevron-right"></i></div>`;
+  }
+  menu += `<div class="menu-item" id="logoutBtn" style="color:var(--danger);"><i class="fa-solid fa-right-from-bracket" style="color:var(--danger);"></i> Выйти</div>`;
+  body.innerHTML = `<div class="profile-head">
+    ${u.photo?`<img class="profile-avatar" src="${u.photo}">`:`<div class="profile-avatar" style="display:flex;align-items:center;justify-content:center;background:var(--grad-main);color:#fff;font-weight:800;font-size:22px;">${(u.fio||'A')[0]}</div>`}
+    <div><div class="profile-name">${u.fio||'Пользователь'}</div><div class="profile-role">${roleLabel}</div></div>
+  </div>${menu}`;
+  $('#logoutBtn')?.addEventListener('click', logout);
+  $('#openOrdersBtn')?.addEventListener('click', ()=>{ renderOrders(); openOv('ovOrders'); });
+  $('#openBotSettingsBtn')?.addEventListener('click', ()=>{
+    if(u.role==='admin'){ $('#botTokenInput').value = State.settings.adminBotToken||''; $('#botChatIdInput').value = State.settings.adminBotChatId||''; }
+    else { $('#botTokenInput').value = u.botToken||''; $('#botChatIdInput').value = u.botChatId||''; }
+    openOv('ovBotSettings');
+  });
+  $('#mySellerProductsBtn')?.addEventListener('click', renderSellerProducts);
+}
+$('#botSettingsSaveBtn').addEventListener('click', async ()=>{
+  const token = $('#botTokenInput').value.trim(), chatId = $('#botChatIdInput').value.trim();
+  if(State.user.role==='admin'){
+    await db.collection('settings').doc('main').set({adminBotToken:token, adminBotChatId:chatId}, {merge:true});
+    State.settings.adminBotToken = token; State.settings.adminBotChatId = chatId;
+  } else {
+    await db.collection('users').doc(State.user.docId).update({botToken:token, botChatId:chatId});
+    State.user.botToken = token; State.user.botChatId = chatId; saveLocalUser(State.user);
+  }
+  closeOv('ovBotSettings'); toast('Настройки бота сохранены','','fa-circle-check');
+});
 
-        // --- КАТЕГОРИИ (НОВОЕ) ---
-        function showCategoryManager() {
-            resetModals();
-            document.getElementById('categoryManagerStep').style.display = 'block';
-            document.getElementById('modalTitle').innerText = "Управление категориями";
-            loadCategoriesToSelect();
-        }
+let editPhotoData = '';
+document.addEventListener('click', (e)=>{
+  if(e.target.closest('[data-open="ovEditProfile"]')){
+    $('#editFio').value = State.user.fio||'';
+    $('#editPassword').value='';
+    editPhotoData = State.user.photo||'';
+    const prev = $('#editPhotoPreview');
+    if(editPhotoData){ prev.src = editPhotoData; prev.style.display='block'; } else prev.style.display='none';
+  }
+});
+$('#editPhotoInput').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  editPhotoData = await compressImage(f, 400, 0.7);
+  const prev = $('#editPhotoPreview'); prev.src = editPhotoData; prev.style.display='block';
+});
+$('#editProfileSaveBtn').addEventListener('click', async ()=>{
+  const fio = $('#editFio').value.trim(); const pass = $('#editPassword').value;
+  const updates = {fio, photo: editPhotoData||''};
+  if(pass) updates.password = pass;
+  if(State.user.docId) await db.collection('users').doc(State.user.docId).update(updates).catch(()=>{});
+  Object.assign(State.user, updates); saveLocalUser(State.user);
+  closeOv('ovEditProfile'); renderProfile(); toast('Профиль обновлён','','fa-circle-check');
+});
 
-        async function loadCategoriesToSelect() {
-            const snap = await db.ref('site_categories').once('value');
-            const data = snap.val();
-            const parentSelect = document.getElementById('parentCatSelect');
-            const prodSelect = document.getElementById('prodCategory');
-            
-            parentSelect.innerHTML = '<option value="">-- Основная категория --</option>';
-            prodSelect.innerHTML = '';
+/* ============ ORDERS ============ */
+async function renderOrders(){
+  const body = $('#ordersBody');
+  body.innerHTML = '<div class="spinner"></div>';
+  let query = db.collection('orders');
+  if(State.user.role==='client') query = query.where('clientId','==',State.user.docId);
+  const snap = await query.orderBy('createdAt','desc').limit(50).get().catch(()=>null);
+  if(!snap || snap.empty){ body.innerHTML = '<div class="empty-state"><i class="fa-solid fa-receipt"></i><div>Заказов пока нет</div></div>'; return; }
+  let docs = snap.docs;
+  if(State.user.role==='seller'){
+    docs = docs.filter(d=>(d.data().items||[]).some(it=>it.sellerId===State.user.docId));
+  }
+  body.innerHTML = docs.map(d=>{
+    const o = d.data();
+    return `<div class="order-item">
+      <div class="row"><b>${o.clientName}</b><span class="order-status">${o.status||'Новый'}</span></div>
+      <div class="row" style="color:var(--text-dim)"><span>${o.clientPhone} · ${o.country}</span><span>${fmt(o.total)}</span></div>
+      <div style="font-size:12px;color:var(--text-dim);">${(o.items||[]).map(i=>i.name+' x'+i.qty).join(', ')}</div>
+    </div>`;
+  }).join('');
+}
 
-            if(data) {
-                Object.keys(data).forEach(id => {
-                    const c = data[id];
-                    // Только основные категории могут быть родителями
-                    if(!c.parentId) {
-                        parentSelect.innerHTML += `<option value="${id}">${c.name}</option>`;
-                    }
-                    prodSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
-                });
-            }
-        }
+/* ============ CHAT ============ */
+function openChatList(){
+  if(!State.user){ openOv('ovAuthChoice'); return; }
+  renderChatList(); openOv('ovChatList');
+}
+async function renderChatList(){
+  const body = $('#chatListBody');
+  body.innerHTML = '<div class="spinner"></div>';
+  const field = State.user.role==='seller' ? 'sellerId' : 'clientId';
+  const snap = await db.collection('chats').where(field,'==',State.user.docId).get().catch(()=>null);
+  if(!snap || snap.empty){ body.innerHTML = '<div class="empty-state"><i class="fa-solid fa-comment-dots"></i><div>Чатов пока нет</div></div>'; return; }
+  const rows = [];
+  for(const d of snap.docs){
+    const c = d.data();
+    const otherId = State.user.role==='seller' ? c.clientId : c.sellerId;
+    let otherDoc = null;
+    try{ otherDoc = (await db.collection('users').doc(otherId).get()).data(); }catch(e){}
+    rows.push({chatDocId:d.id, otherId, otherName: otherDoc?otherDoc.fio:'Пользователь'});
+  }
+  body.innerHTML = rows.map(r=>`<div class="chat-list-item" data-openchat="${r.otherId}" data-name="${r.otherName}">
+    <div class="chat-avatar">${(r.otherName||'U')[0]}</div>
+    <div class="chat-list-body"><div class="chat-list-name">${r.otherName}</div><div class="chat-list-last">Нажмите, чтобы открыть чат</div></div>
+    <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+  </div>`).join('');
+  body.querySelectorAll('[data-openchat]').forEach(el=>{
+    el.addEventListener('click', ()=>openChatThread(el.getAttribute('data-openchat'), el.getAttribute('data-name')));
+  });
+}
+function openChatThread(otherId, otherName){
+  State.activeChatSellerId = otherId;
+  $('#chatThreadName').textContent = otherName||'Чат';
+  $('#chatMessages').innerHTML = '';
+  closeOv('ovChatList'); openOv('ovChatThread');
+  const chatDocId = [State.user.docId, otherId].sort().join('_');
+  if(State.chatUnsub) State.chatUnsub();
+  State.chatUnsub = db.collection('chats').doc(chatDocId).collection('messages').orderBy('createdAt','asc')
+    .onSnapshot(snap=>{
+      $('#chatMessages').innerHTML = snap.docs.map(d=>{
+        const m = d.data();
+        const mine = m.senderId === (State.user.docId||State.user.role);
+        return `<div class="msg ${mine?'out':'in'}">${m.text}</div>`;
+      }).join('');
+      $('#chatMessages').scrollTop = $('#chatMessages').scrollHeight;
+    }, err=>console.warn(err));
+}
+function sendChatMessage(){
+  const text = $('#chatInputMsg').value.trim();
+  if(!text || !State.activeChatSellerId) return;
+  const chatDocId = [State.user.docId, State.activeChatSellerId].sort().join('_');
+  db.collection('chats').doc(chatDocId).set({
+    clientId: State.user.role==='seller'?State.activeChatSellerId:State.user.docId,
+    sellerId: State.user.role==='seller'?State.user.docId:State.activeChatSellerId,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, {merge:true});
+  db.collection('chats').doc(chatDocId).collection('messages').add({
+    senderId: State.user.docId, text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  $('#chatInputMsg').value='';
+}
+$('#chatSendBtn').addEventListener('click', sendChatMessage);
+$('#chatInputMsg').addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendChatMessage(); });
+function updateChatBadgeVisibility(){ /* placeholder for unread counts */ }
 
-        async function addNewCategory() {
-            const name = document.getElementById('newCatName').value.trim();
-            const parentId = document.getElementById('parentCatSelect').value;
-            if(!name) return alert("Введите название!");
+/* Open chat directly from a product (chat with that product's seller) */
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-chat-seller]');
+  if(btn){
+    if(!State.user){ openOv('ovAuthChoice'); return; }
+    closeOv('ovProduct');
+    openChatThread(btn.getAttribute('data-chat-seller'), btn.getAttribute('data-seller-name'));
+  }
+});
 
-            await db.ref('site_categories').push({
-                name: name,
-                parentId: parentId || null
-            });
-            
-            document.getElementById('newCatName').value = '';
-            alert("Категория добавлена!");
-            loadCategoriesToSelect();
-            updateSideCatalog(); // Обновляем боковое меню
-        }
+/* ============ ABOUT ============ */
+function renderAbout(){
+  const links = State.settings.social || {};
+  const wrap = $('#aboutSocialLinks');
+  wrap.innerHTML = `
+    ${links.instagram?`<a class="ig" href="${links.instagram}" target="_blank"><i class="fa-brands fa-instagram"></i></a>`:''}
+    ${links.telegram?`<a class="tg" href="${links.telegram}" target="_blank"><i class="fa-brands fa-telegram"></i></a>`:''}
+    ${links.whatsapp?`<a class="wa" href="${links.whatsapp}" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>`:''}
+  `;
+}
 
-        function updateSideCatalog() {
-            db.ref('site_categories').on('value', (snap) => {
-                const data = snap.val();
-                const list = document.getElementById('mainCatalogList');
-                list.innerHTML = `<li class="catalog-item"><div class="catalog-link" onclick="filterByCategory('Все')"><span>Все товары</span></div></li>`;
-                
-                if(data) {
-                    const categories = Object.keys(data).map(id => ({id, ...data[id]}));
-                    const mainCats = categories.filter(c => !c.parentId);
+/* ============ SELLER: MY PRODUCTS ============ */
+function renderSellerProducts(){
+  const list = State.products.filter(p=>p.sellerId===State.user.docId);
+  const wrap = $('#sellerProductsList');
+  wrap.innerHTML = list.map(p=>`<div class="list-row">
+    <div><div class="list-row-title">${p.name}</div><div class="list-row-sub">${fmt(p.price)}</div></div>
+    <div style="display:flex;gap:6px;">
+      <button class="tiny-btn" data-editprod="${p.id}">Изменить</button>
+      <button class="tiny-btn danger" data-delprod="${p.id}">Удалить</button>
+    </div>
+  </div>`).join('') || '<div class="empty-state"><i class="fa-solid fa-box-open"></i><div>Товаров пока нет</div></div>';
+}
+$('#sellerAddProductBtn').addEventListener('click', ()=>openProductForm(null));
 
-                    mainCats.forEach(main => {
-                        const subs = categories.filter(c => c.parentId === main.id);
-                        if(subs.length > 0) {
-                            list.innerHTML += `
-                                <li class="catalog-item">
-                                    <div class="catalog-link" onclick="toggleSub(this)">
-                                        <span>${main.name}</span>
-                                        <i data-lucide="chevron-down"></i>
-                                    </div>
-                                    <div class="sub-catalog">
-                                        ${subs.map(s => `<div class="sub-link" onclick="filterByCategory('${s.name}')">${s.name}</div>`).join('')}
-                                    </div>
-                                </li>`;
-                        } else {
-                            list.innerHTML += `
-                                <li class="catalog-item">
-                                    <div class="catalog-link" onclick="filterByCategory('${main.name}')"><span>${main.name}</span></div>
-                                </li>`;
-                        }
-                    });
-                    lucide.createIcons();
-                }
-            });
-        }
+/* ============ PRODUCT FORM (admin + seller) ============ */
+let pfChars = [], pfImages = [];
+function fillCatalogSelects(){
+  const catSel = $('#pfCatalog');
+  catSel.innerHTML = State.catalogs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  catSel.onchange = fillSubcatalogSelect;
+  fillSubcatalogSelect();
+}
+function fillSubcatalogSelect(){
+  const catId = $('#pfCatalog').value;
+  const subSel = $('#pfSubcatalog');
+  subSel.innerHTML = State.subcatalogs.filter(s=>s.catalogId===catId).map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+}
+function renderPfChars(){
+  $('#pfCharsList').innerHTML = pfChars.map((c,i)=>`<div class="field-row" style="margin-bottom:6px;">
+    <input placeholder="Параметр" value="${c.key}" data-charkey="${i}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface-2);">
+    <input placeholder="Значение" value="${c.value}" data-charval="${i}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface-2);">
+    <button class="tiny-btn danger" data-charrm="${i}"><i class="fa-solid fa-xmark"></i></button>
+  </div>`).join('');
+}
+document.addEventListener('input', (e)=>{
+  if(e.target.matches('[data-charkey]')) pfChars[e.target.getAttribute('data-charkey')].key = e.target.value;
+  if(e.target.matches('[data-charval]')) pfChars[e.target.getAttribute('data-charval')].value = e.target.value;
+});
+document.addEventListener('click', (e)=>{
+  const rm = e.target.closest('[data-charrm]');
+  if(rm){ pfChars.splice(parseInt(rm.getAttribute('data-charrm')),1); renderPfChars(); }
+});
+$('#pfAddCharBtn').addEventListener('click', ()=>{ pfChars.push({key:'',value:''}); renderPfChars(); });
 
-        // --- OLD FUNCTIONS ---
-        function toggleCatalog() {
-            document.getElementById('sideCatalog').classList.toggle('open');
-        }
+function renderPfImages(){
+  const row = $('#pfImagesRow');
+  row.innerHTML = pfImages.map((img,i)=>`<div class="img-thumb"><img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"><span class="rm" data-imgrm="${i}">✕</span></div>`).join('');
+  if(pfImages.length<4){
+    row.innerHTML += `<label class="img-thumb-add"><i class="fa-solid fa-plus"></i><input type="file" accept="image/*" multiple class="hidden" id="pfImagesInput"></label>`;
+    $('#pfImagesInput').addEventListener('change', handlePfImages);
+  }
+}
+async function handlePfImages(e){
+  const files = Array.from(e.target.files).slice(0, 4-pfImages.length);
+  for(const f of files){ const d = await compressImage(f, 900, 0.72); pfImages.push(d); }
+  renderPfImages();
+}
+document.addEventListener('click', (e)=>{
+  const rm = e.target.closest('[data-imgrm]');
+  if(rm){ pfImages.splice(parseInt(rm.getAttribute('data-imgrm')),1); renderPfImages(); }
+});
 
-        function toggleSub(el) {
-            const sub = el.nextElementSibling;
-            sub.classList.toggle('active');
-            el.style.background = sub.classList.contains('active') ? 'var(--accent-color)' : 'rgba(255,255,255,0.03)';
-        }
+let editingProductId = null;
+function openProductForm(productId){
+  editingProductId = productId;
+  fillCatalogSelects();
+  const p = productId ? State.products.find(pp=>pp.id===productId) : null;
+  $('#productFormTitle').childNodes[0].textContent = p ? 'Изменить товар ' : 'Новый товар ';
+  $('#pfName').value = p?p.name:'';
+  $('#pfPrice').value = p?p.price:'';
+  $('#pfOldPrice').value = p&&p.oldPrice?p.oldPrice:'';
+  $('#pfDesc').value = p?p.desc||'':'';
+  pfChars = p ? JSON.parse(JSON.stringify(p.characteristics||[])) : [];
+  pfImages = p ? (p.images||[]).slice() : [];
+  renderPfChars(); renderPfImages();
+  if(p){ $('#pfCatalog').value = p.catalogId; fillSubcatalogSelect(); $('#pfSubcatalog').value = p.subcatalogId; }
+  const w = p && p.wholesale ? p.wholesale : null;
+  $('#pfWholesaleEnabled').checked = !!(w && w.enabled);
+  $('#pfWholesaleDesc').value = w ? (w.desc||'') : '';
+  $('#pfWholesalePrice').value = w ? (w.price||'') : '';
+  $('#pfWholesaleMinQty').value = w ? (w.minQty||1) : 1;
+  $('#pfWholesaleFields').style.display = (w && w.enabled) ? 'block' : 'none';
+  closeOv('ovMyCatalogs'); closeOv('ovAdmin');
+  openOv('ovProductForm');
+}
+$('#pfWholesaleEnabled').addEventListener('change', (e)=>{
+  $('#pfWholesaleFields').style.display = e.target.checked ? 'block' : 'none';
+});
+document.addEventListener('click', (e)=>{
+  const edit = e.target.closest('[data-editprod]');
+  if(edit) openProductForm(edit.getAttribute('data-editprod'));
+  const del = e.target.closest('[data-delprod]');
+  if(del){
+    if(confirm('Удалить товар?')){
+      db.collection('products').doc(del.getAttribute('data-delprod')).delete();
+    }
+  }
+});
+$('#pfSaveBtn').addEventListener('click', async ()=>{
+  const name = $('#pfName').value.trim(), price = parseFloat($('#pfPrice').value);
+  if(!name || !price){ toast('Укажите название и цену','','fa-circle-exclamation'); return; }
+  const data = {
+    name, price, oldPrice: $('#pfOldPrice').value ? parseFloat($('#pfOldPrice').value) : null,
+    desc: $('#pfDesc').value.trim(), catalogId: $('#pfCatalog').value, subcatalogId: $('#pfSubcatalog').value,
+    characteristics: pfChars.filter(c=>c.key), images: pfImages,
+    sellerId: State.user.role==='seller' ? State.user.docId : (editingProductId ? undefined : 'admin'),
+    rating: 5, ratingCount: 0,
+    wholesale: $('#pfWholesaleEnabled').checked ? {
+      enabled: true,
+      desc: $('#pfWholesaleDesc').value.trim(),
+      price: parseFloat($('#pfWholesalePrice').value) || 0,
+      minQty: parseInt($('#pfWholesaleMinQty').value) || 1
+    } : null
+  };
+  // compute perceptual hashes for image search
+  data.imgHashes = [];
+  for(const img of pfImages){ const h = await imageHash(img); if(h) data.imgHashes.push(h); }
+  if(editingProductId){
+    await db.collection('products').doc(editingProductId).update(data);
+    toast('Товар обновлён','','fa-circle-check');
+  } else {
+    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    await db.collection('products').add(data);
+    toast('Товар добавлен','','fa-circle-check');
+  }
+  closeOv('ovProductForm');
+});
 
-        function filterByCategory(category) {
-            db.ref('products').once('value', (snapshot) => {
-                const container = document.getElementById('productsContainer');
-                container.innerHTML = "";
-                const data = snapshot.val();
-                if(data) {
-                    Object.keys(data).reverse().forEach(id => {
-                        const p = data[id];
-                        if(category === 'Все' || p.category === category) {
-                            renderProductCard(id, p);
-                        }
-                    });
-                    lucide.createIcons();
-                }
-            });
-            if(window.innerWidth < 1000) toggleCatalog();
-        }
+/* ============ ADMIN PANEL ============ */
+let adminActiveTab = 'catalogs';
+document.addEventListener('click', (e)=>{
+  const tab = e.target.closest('.admin-tab');
+  if(tab && tab.closest('#adminTabs')){
+    $$('.admin-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    adminActiveTab = tab.getAttribute('data-tab');
+    renderAdminTab();
+  }
+});
+function renderAdminTab(){
+  const body = $('#adminTabBody');
+  if(adminActiveTab==='catalogs'){
+    body.innerHTML = `
+      <div class="field-row"><input id="newCatName" placeholder="Название каталога" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface-2);">
+      <button class="tiny-btn primary" id="addCatBtn">Добавить</button></div>
+      <div id="catList" style="margin-top:10px;"></div>`;
+    $('#addCatBtn').addEventListener('click', async ()=>{
+      const name = $('#newCatName').value.trim(); if(!name) return;
+      await db.collection('catalogs').add({name, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+      $('#newCatName').value='';
+    });
+    renderAdminCatList();
+  } else if(adminActiveTab==='products'){
+    body.innerHTML = `<button class="btn btn-primary" style="margin-bottom:10px;" id="adminAddProductBtn"><i class="fa-solid fa-plus"></i> Новый товар</button><div id="adminProductList"></div>`;
+    $('#adminAddProductBtn').addEventListener('click', ()=>openProductForm(null));
+    $('#adminProductList').innerHTML = State.products.map(p=>`<div class="list-row">
+      <div><div class="list-row-title">${p.name}</div><div class="list-row-sub">${fmt(p.price)}</div></div>
+      <div style="display:flex;gap:6px;"><button class="tiny-btn" data-editprod="${p.id}">Изменить</button><button class="tiny-btn danger" data-delprod="${p.id}">Удалить</button></div>
+    </div>`).join('') || '<div class="empty-state"><i class="fa-solid fa-box-open"></i></div>';
+  } else if(adminActiveTab==='users'){
+    body.innerHTML = '<div class="spinner"></div>';
+    db.collection('users').get().then(snap=>{
+      body.innerHTML = snap.docs.map(d=>{
+        const u = d.data();
+        return `<div class="list-row">
+          <div><div class="list-row-title">${u.fio}</div><div class="list-row-sub">${u.fullPhone||''} · пароль: ${u.password||''} · ${u.role==='seller'?'Продавец':'Клиент'}</div></div>
+          ${u.role==='seller' ? `<button class="tiny-btn danger" data-unassign="${d.id}">Снять</button>` : `<button class="tiny-btn primary" data-assign="${d.id}">Сделать продавцом</button>`}
+        </div>`;
+      }).join('') || '<div class="empty-state"><i class="fa-solid fa-users"></i></div>';
+      body.querySelectorAll('[data-assign]').forEach(b=>b.addEventListener('click', async ()=>{
+        await db.collection('users').doc(b.getAttribute('data-assign')).update({role:'seller'}); renderAdminTab();
+      }));
+      body.querySelectorAll('[data-unassign]').forEach(b=>b.addEventListener('click', async ()=>{
+        await db.collection('users').doc(b.getAttribute('data-unassign')).update({role:'client'}); renderAdminTab();
+      }));
+    });
+  } else if(adminActiveTab==='banners'){
+    body.innerHTML = `<p style="font-size:12px;color:var(--text-dim);">До 4 изображений, слайд-шоу каждые 4 секунды.</p>
+      <div class="img-upload-row" id="adminBannerRow"></div>`;
+    renderAdminBanners();
+  } else if(adminActiveTab==='social'){
+    const s = State.settings.social||{};
+    body.innerHTML = `
+      <div class="field"><label>Instagram ссылка</label><input id="socIg" value="${s.instagram||''}"></div>
+      <div class="field"><label>Telegram ссылка</label><input id="socTg" value="${s.telegram||''}"></div>
+      <div class="field"><label>WhatsApp ссылка</label><input id="socWa" value="${s.whatsapp||''}"></div>
+      <button class="btn btn-primary" id="saveSocialBtn">Сохранить</button>`;
+    $('#saveSocialBtn').addEventListener('click', async ()=>{
+      const social = {instagram:$('#socIg').value.trim(), telegram:$('#socTg').value.trim(), whatsapp:$('#socWa').value.trim()};
+      await db.collection('settings').doc('main').set({social}, {merge:true});
+      State.settings.social = social; toast('Сохранено','','fa-circle-check');
+    });
+  } else if(adminActiveTab==='security'){
+    const fbCfg = window.HZ.firebaseConfig || {};
+    body.innerHTML = `
+      <div class="field"><label>Логин администратора</label><input id="secLogin" value="${State.settings.adminLogin||'admin'}"></div>
+      <div class="field"><label>Пароль администратора</label><input id="secPass" value="${State.settings.adminPassword||'12345'}"></div>
+      <button class="btn btn-primary" id="saveSecBtn">Сохранить</button>
+      <div class="section-title" style="padding:16px 0 6px;font-size:14px;">База данных Firebase</div>
+      <p style="color:var(--text-dim);font-size:12px;margin:0 0 10px;">Подключённый проект: <b>${fbCfg.projectId||'—'}</b>. Изменить или удалить эти данные может только администратор.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline" style="width:auto;padding:12px 16px;" id="changeFirebaseBtn"><i class="fa-solid fa-database"></i> Изменить данные Firebase</button>
+        <button class="btn" style="width:auto;padding:12px 16px;background:var(--danger);color:#fff;" id="deleteFirebaseBtn"><i class="fa-solid fa-trash"></i> Удалить данные Firebase</button>
+      </div>`;
+    $('#saveSecBtn').addEventListener('click', async ()=>{
+      const adminLogin = $('#secLogin').value.trim(), adminPassword = $('#secPass').value.trim();
+      await db.collection('settings').doc('main').set({adminLogin, adminPassword}, {merge:true});
+      State.settings.adminLogin = adminLogin; State.settings.adminPassword = adminPassword;
+      toast('Данные для входа обновлены','','fa-circle-check');
+    });
+    $('#changeFirebaseBtn').addEventListener('click', ()=>{
+      const pass = prompt('Введите пароль администратора, чтобы изменить данные Firebase:');
+      if(pass === null) return;
+      if(pass !== (State.settings.adminPassword||'12345')){ toast('Неверный пароль','','fa-circle-exclamation'); return; }
+      if(confirm('Текущие данные Firebase будут удалены из этого браузера, и откроется экран настройки нового проекта. Продолжить?')){
+        window.hzDeleteFirebaseConfig();
+      }
+    });
+    $('#deleteFirebaseBtn').addEventListener('click', ()=>{
+      const pass = prompt('Введите пароль администратора, чтобы удалить данные Firebase:');
+      if(pass === null) return;
+      if(pass !== (State.settings.adminPassword||'12345')){ toast('Неверный пароль','','fa-circle-exclamation'); return; }
+      if(confirm('Удалить сохранённые данные Firebase из этого браузера? Сайт перезапустится и попросит настроить подключение заново.')){
+        window.hzDeleteFirebaseConfig();
+      }
+    });
+  }
+}
+function renderAdminCatList(){
+  const wrap = $('#catList');
+  wrap.innerHTML = State.catalogs.map(c=>{
+    const subs = State.subcatalogs.filter(s=>s.catalogId===c.id);
+    return `<div style="margin-bottom:10px;padding:10px;background:var(--surface-2);border-radius:12px;">
+      <div class="list-row" style="border:none;padding:0 0 8px;">
+        <div class="list-row-title">${c.name}</div>
+        <button class="tiny-btn danger" data-delcat="${c.id}">Удалить</button>
+      </div>
+      <div>${subs.map(s=>`<span class="subcat-chip">${s.name} <span data-delsub="${s.id}" style="color:var(--danger);cursor:pointer;">✕</span></span>`).join('')}</div>
+      <div class="field-row" style="margin-top:8px;">
+        <input placeholder="Новый подкаталог" data-newsub="${c.id}" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);">
+        <button class="tiny-btn primary" data-addsub="${c.id}">+</button>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><i class="fa-solid fa-folder-open"></i></div>';
+  wrap.querySelectorAll('[data-delcat]').forEach(b=>b.addEventListener('click', ()=>db.collection('catalogs').doc(b.getAttribute('data-delcat')).delete()));
+  wrap.querySelectorAll('[data-delsub]').forEach(b=>b.addEventListener('click', ()=>db.collection('subcatalogs').doc(b.getAttribute('data-delsub')).delete()));
+  wrap.querySelectorAll('[data-addsub]').forEach(b=>b.addEventListener('click', async ()=>{
+    const catId = b.getAttribute('data-addsub');
+    const input = wrap.querySelector(`[data-newsub="${catId}"]`);
+    const name = input.value.trim(); if(!name) return;
+    await db.collection('subcatalogs').add({name, catalogId: catId});
+    input.value='';
+  }));
+}
+function renderAdminBanners(){
+  const row = $('#adminBannerRow');
+  const banners = State.settings.banners||[];
+  row.innerHTML = banners.map((b,i)=>`<div class="img-thumb"><img src="${b}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"><span class="rm" data-bannerrm="${i}">✕</span></div>`).join('');
+  if(banners.length<4){
+    row.innerHTML += `<label class="img-thumb-add"><i class="fa-solid fa-plus"></i><input type="file" accept="image/*" multiple class="hidden" id="bannerInput"></label>`;
+    $('#bannerInput').addEventListener('change', async (e)=>{
+      const files = Array.from(e.target.files).slice(0,4-banners.length);
+      for(const f of files){ const d = await compressImage(f, 1200, 0.75); banners.push(d); }
+      await db.collection('settings').doc('main').set({banners}, {merge:true});
+      State.settings.banners = banners; renderAdminBanners(); renderBanner();
+    });
+  }
+  row.querySelectorAll('[data-bannerrm]').forEach(b=>b.addEventListener('click', async ()=>{
+    banners.splice(parseInt(b.getAttribute('data-bannerrm')),1);
+    await db.collection('settings').doc('main').set({banners}, {merge:true});
+    State.settings.banners = banners; renderAdminBanners(); renderBanner();
+  }));
+}
 
-        // --- ОБНОВЛЕННАЯ ФУНКЦИЯ КАРТОЧКИ ---
-        function renderProductCard(id, p) {
-            const container = document.getElementById('productsContainer');
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            const isAdmin = user && (user.isAdmin || user.phone === 'admin');
-            
-            const card = document.createElement('article');
-            card.className = "product-card";
-            card.setAttribute('data-id', id);
-            card.onclick = () => openProductDetails(id);
-            
-            let adminHtml = '';
-            if (isAdmin) {
-                adminHtml = `
-                    <div class="admin-controls">
-                        <div class="admin-card-btn" onclick="editProduct('${id}', event)"><i data-lucide="edit-3"></i></div>
-                        <div class="admin-card-btn del" onclick="deleteProduct('${id}', event)"><i data-lucide="trash-2"></i></div>
-                    </div>
-                `;
-            }
+/* ============ IMAGE SEARCH ("search by photo") ============ */
+$('#photoSearchBtn').addEventListener('click', ()=>{ $('#imageSearchResults').innerHTML=''; openOv('ovImageSearch'); });
+$('#imageSearchInput').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  $('#imageSearchResults').innerHTML = '<div class="spinner" style="grid-column:1/-1;"></div>';
+  const dataUrl = await compressImage(f, 300, 0.7);
+  const targetHash = await imageHash(dataUrl);
+  const scored = State.products.map(p=>{
+    let best = 64;
+    (p.imgHashes||[]).forEach(h=>{ const d = hammingDist(targetHash, h); if(d<best) best = d; });
+    return {p, dist: best};
+  }).filter(s=>s.dist < 64).sort((a,b)=>a.dist-b.dist).slice(0,12).map(s=>s.p);
+  renderGrid(scored, '#imageSearchResults');
+});
 
-            card.innerHTML = `
-                ${adminHtml}
-                <img src="${p.images[0]}" class="product-img">
-                <h3 class="product-title">${p.title}</h3>
-                <div>
-                    ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₽</span>` : ''}
-                    <span class="price">${p.price} ₽</span>
-                </div>
-                <button class="buy-btn" onclick="buyProduct('${id}', '${p.title}', event, ${p.price})">
-                    <i data-lucide="shopping-basket"></i> Купить
-                </button>
-            `;
-            container.appendChild(card);
-            lucide.createIcons();
-        }
+/* ============ CONSULTANT BOT ============ */
+const consultantFaq = [
+  {q:'Как оформить заказ?', a:'Добавьте товары в корзину, нажмите «Оформить заказ», укажите имя, телефон и страну доставки.'},
+  {q:'Как стать продавцом?', a:'Продавцов назначает администратор. Зарегистрируйтесь, и администратор сможет назначить вас продавцом в панели пользователей.'},
+  {q:'Способы доставки', a:'Мы доставляем по России, Таджикистану и Узбекистану. Детали уточнит продавец в чате после заказа.'},
+  {q:'Как связаться с продавцом?', a:'Откройте карточку товара → раздел «Чат» → напишите продавцу напрямую внутри сайта.'},
+];
+function openConsultant(){
+  $('#consultantPanel').classList.add('open');
+  const bodyEl = $('#consultantBody');
+  if(!bodyEl.dataset.inited){
+    bodyEl.innerHTML = '<div class="msg in">Здравствуйте! Я онлайн-консультант HORIZON MARKET 👋 Чем могу помочь?</div>';
+    bodyEl.dataset.inited='1';
+  }
+  $('#consultantQuick').innerHTML = consultantFaq.map((f,i)=>`<button data-faq="${i}">${f.q}</button>`).join('');
+}
+$('#consultantFab').addEventListener('click', openConsultant);
+$('#closeConsultant').addEventListener('click', ()=>$('#consultantPanel').classList.remove('open'));
+document.addEventListener('click', (e)=>{
+  const faqBtn = e.target.closest('[data-faq]');
+  if(faqBtn){
+    const item = consultantFaq[parseInt(faqBtn.getAttribute('data-faq'))];
+    const bodyEl = $('#consultantBody');
+    bodyEl.innerHTML += `<div class="msg out">${item.q}</div><div class="msg in">${item.a}</div>`;
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+});
 
-        // --- НОВЫЕ ФУНКЦИИ УПРАВЛЕНИЯ ТОВАРОМ ---
-        async function editProduct(id, event) {
-            if (event) event.stopPropagation();
-            const snap = await db.ref('products/' + id).once('value');
-            const p = snap.val();
-            if(!p) return;
+/* ============ NEW PRODUCT NOTIFICATIONS ============ */
+function notifyNewProduct(p){
+  if('Notification' in window && Notification.permission==='granted'){
+    new Notification('✨ Новинка в HORIZON MARKET!', {body: `${p.name} — ${fmt(p.price)}`});
+  }
+  toast('🔥 Новый товар в каталоге!', p.name, 'fa-sparkles');
+}
+if('Notification' in window && Notification.permission==='default'){
+  setTimeout(()=>{ Notification.requestPermission().catch(()=>{}); }, 4000);
+}
 
-            currentEditProductId = id;
-            showAddProduct();
-            document.getElementById('modalTitle').innerText = "Редактирование товара";
-            document.getElementById('saveProdBtn').innerText = "Сохранить изменения";
-            
-            document.getElementById('prodTitle').value = p.title;
-            document.getElementById('prodPrice').value = p.price;
-            document.getElementById('prodOldPrice').value = p.oldPrice || '';
-            document.getElementById('prodCategory').value = p.category;
-            document.getElementById('prodSpecs').value = p.specs || '';
-            
-            uploadedImages = p.images || [];
-            document.getElementById('imagePreviews').innerHTML = uploadedImages.map(img => `<div class="preview-box"><img src="${img}"></div>`).join('');
-        }
+/* ============ FIRESTORE LIVE LISTENERS ============ */
+db.collection('catalogs').orderBy('createdAt','asc').onSnapshot(snap=>{
+  State.catalogs = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderCatalogTree();
+  if($('#ovAdmin').classList.contains('open') && adminActiveTab==='catalogs') renderAdminCatList();
+}, ()=>{
+  db.collection('catalogs').onSnapshot(snap=>{ State.catalogs = snap.docs.map(d=>({id:d.id,...d.data()})); renderCatalogTree(); });
+});
+db.collection('subcatalogs').onSnapshot(snap=>{
+  State.subcatalogs = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderCatalogTree();
+  if($('#ovAdmin').classList.contains('open') && adminActiveTab==='catalogs') renderAdminCatList();
+});
+db.collection('products').orderBy('createdAt','desc').onSnapshot(snap=>{
+  const newList = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  if(!State.firstProductsLoad){
+    newList.forEach(p=>{ if(!State.seenProductIds.has(p.id)) notifyNewProduct(p); });
+  }
+  newList.forEach(p=>State.seenProductIds.add(p.id));
+  State.firstProductsLoad = false;
+  State.products = newList;
+  filterAndRenderGrid({});
+  if(State.user){ renderFavorites(); }
+}, ()=>{
+  db.collection('products').onSnapshot(snap=>{
+    State.products = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    filterAndRenderGrid({});
+  });
+});
+db.collection('settings').doc('main').onSnapshot(doc=>{
+  State.settings = doc.exists ? doc.data() : {};
+  renderBanner();
+  if($('#ovAbout').classList.contains('open')) renderAbout();
+});
+db.collection('users').where('role','==','seller').onSnapshot(snap=>{
+  State.sellersCache = {};
+  snap.docs.forEach(d=>{ State.sellersCache[d.id] = {id:d.id, ...d.data()}; });
+});
 
-        async function deleteProduct(id, event) {
-            if (event) event.stopPropagation();
-            if (confirm("Вы уверены, что хотите удалить этот товар навсегда?")) {
-                await db.ref('products/' + id).remove();
-                alert("Товар удален");
-            }
-        }
+/* ============ INIT ============ */
+(function init(){
+  const savedUser = localUser();
+  if(savedUser) State.user = savedUser;
+  loadCart();
+  refreshUserUI();
+  renderBanner();
+  setTimeout(()=>{ if(!State.user){ /* guest is fine, browsing allowed */ } }, 0);
+  initInstallPrompts();
+})();
 
-        async function cleanOldOrders() {
-            const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
-            const now = Date.now();
-            const threshold = now - twoDaysInMs;
-            db.ref('orders').once('value', (snapshot) => {
-                const orders = snapshot.val();
-                if (orders) {
-                    Object.keys(orders).forEach(id => {
-                        if (orders[id].timestamp && orders[id].timestamp < threshold) {
-                            db.ref('orders/' + id).remove();
-                        }
-                    });
-                }
-            });
-        }
+} // end startApp
 
-        async function initAdmin() {
-            const snap = await db.ref('admin_settings').once('value');
-            if (!snap.exists()) db.ref('admin_settings').set({ login: 'admin', pass: '2004' });
-        }
-        initAdmin();
-
-        function openModal() { 
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (user) showProfile();
-            else { document.getElementById('authModal').style.display = 'flex'; resetModals(); }
-        }
-        function closeModal() { document.getElementById('authModal').style.display = 'none'; resetModals(); }
-
-        function resetModals() {
-            ['step1', 'regStep1', 'regStep2', 'loginStep', 'profileStep', 'adminSettingsStep', 'addProductStep', 'clientsListStep', 'ordersListStep', 'userOrdersStep', 'productViewStep', 'cartStep', 'checkoutStep', 'categoryManagerStep'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { el.style.display = 'none'; el.classList.remove('active-content'); }
-            });
-            document.getElementById('modalMainBox').style.maxWidth = '450px';
-            document.getElementById('step1').style.display = 'block';
-            document.getElementById('modalTitle').innerText = "Личный кабинет";
-            currentEditProductId = null; // Сбрасываем ID редактирования
-        }
-
-        function showCart() {
-            resetModals();
-            document.getElementById('authModal').style.display = 'flex';
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('cartStep').style.display = 'block';
-            document.getElementById('cartStep').classList.add('active-content');
-            document.getElementById('modalMainBox').style.maxWidth = '800px';
-            document.getElementById('modalTitle').innerText = "Ваша корзина";
-            renderCartTable();
-        }
-
-        function renderCartTable() {
-            const body = document.getElementById('cartTableBody');
-            const totalEl = document.getElementById('cartTotalSum');
-            body.innerHTML = "";
-            let total = 0;
-            if (cart.length === 0) {
-                body.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px;'>Корзина пуста</td></tr>";
-                totalEl.innerText = "0";
-                return;
-            }
-            cart.forEach((item) => {
-                const sum = item.price * item.quantity;
-                total += sum;
-                body.innerHTML += `<tr><td>${item.title}</td><td>${item.quantity} шт.</td><td>${sum} ₽</td></tr>`;
-            });
-            totalEl.innerText = total;
-        }
-
-        function showCheckoutForm() {
-            if(cart.length === 0) return;
-            resetModals();
-            document.getElementById('checkoutStep').style.display = 'block';
-            document.getElementById('modalTitle').innerText = "Данные для доставки";
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if(user) {
-                document.getElementById('orderClientName').value = user.name || "";
-                document.getElementById('orderClientPhone').value = user.phone || "+992 ";
-                document.getElementById('orderClientAddress').value = user.address || "";
-            }
-        }
-
-        async function submitFinalOrder() {
-            const name = document.getElementById('orderClientName').value;
-            const phone = document.getElementById('orderClientPhone').value;
-            const address = document.getElementById('orderClientAddress').value;
-            if(!name || !phone || !address || phone.length < 10) { alert("Заполните все поля!"); return; }
-            const btn = document.getElementById('finalOrderBtn');
-            btn.innerText = "Отправка..."; btn.disabled = true;
-            try {
-                let orderSummary = ""; let totalSum = 0;
-                for (let item of cart) {
-                    const itemSum = item.price * item.quantity;
-                    totalSum += itemSum;
-                    orderSummary += `🔹 ${item.title} x${item.quantity} - ${itemSum}₽\n`;
-                    await db.ref('orders').push({
-                        productId: item.id, productTitle: item.title, clientPhone: phone,
-                        clientName: name, clientAddress: address, status: "В процессе",
-                        timestamp: Date.now(), quantity: item.quantity, totalPrice: itemSum
-                    });
-                }
-                const message = `🚀 *НОВЫЙ ЗАКАЗ!*\n👤 *Клиент:* ${name}\n📞 *Телефон:* ${phone}\n📍 *Адрес:* ${address}\n📦 *Товары:*\n${orderSummary}\n💰 *ИТОГО:* ${totalSum} ₽`;
-                await sendToTelegram(message);
-                alert("Заказ успешно оформлен!");
-                cart = []; updateCartCounter(); closeModal();
-            } catch (e) { alert("Ошибка: " + e.message); } finally { btn.innerText = "Заказать"; btn.disabled = false; }
-        }
-
-        async function sendToTelegram(text) {
-            const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`;
-            const response = await fetch(url, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TG_CHAT_ID, text: text, parse_mode: 'Markdown' })
-            });
-            return response.json();
-        }
-
-        function updateCartCounter() {
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCounter').innerText = count;
-        }
-
-        async function openProductDetails(id) {
-            const snap = await db.ref('products/' + id).once('value');
-            const p = snap.val(); if(!p) return;
-            resetModals();
-            document.getElementById('authModal').style.display = 'flex';
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('productViewStep').style.display = 'block';
-            document.getElementById('productViewStep').classList.add('active-content');
-            document.getElementById('modalMainBox').style.maxWidth = '800px';
-            document.getElementById('modalTitle').innerText = p.title;
-            const content = document.getElementById('productViewContent');
-            content.innerHTML = `
-                <div class="product-view-container">
-                    <div>
-                        <img src="${p.images[0]}" class="product-main-img" id="mainViewImg">
-                        <div class="small-gallery">
-                            ${p.images.map(img => `<img src="${img}" onclick="document.getElementById('mainViewImg').src='${img}'">`).join('')}
-                        </div>
-                    </div>
-                    <div>
-                        <p style="color:var(--accent-color); font-weight:bold; font-size:1.5rem;">${p.price} ₽</p>
-                        ${p.oldPrice ? `<p style="text-decoration:line-through; color:#777;">${p.oldPrice} ₽</p>` : ''}
-                        <p style="margin-top:10px; color:#888;">Категория: <b>${p.category}</b></p>
-                        <div class="product-info-specs"><b>Характеристики:</b><br>${p.specs || 'Нет описания'}</div>
-                        <button class="modal-btn primary-btn" onclick="buyProduct('${id}', '${p.title}', event, ${p.price})">Добавить в корзину</button>
-                        <button class="modal-btn secondary-btn" onclick="closeModal()">Закрыть</button>
-                    </div>
-                </div>`;
-            lucide.createIcons();
-        }
-
-        function showLogin() { resetModals(); document.getElementById('step1').style.display = 'none'; document.getElementById('loginStep').style.display = 'block'; }
-        function showRegisterStep1() { resetModals(); document.getElementById('step1').style.display = 'none'; document.getElementById('regStep1').style.display = 'block'; }
-
-        function showProfile() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            resetModals();
-            document.getElementById('authModal').style.display = 'flex';
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('profileStep').style.display = 'block';
-            if(user.isAdmin || user.phone === 'admin') {
-                document.getElementById('modalTitle').innerText = "Кабинет Администратора";
-                document.getElementById('editName').value = user.name;
-                document.getElementById('addressGroup').style.display = 'none';
-                document.getElementById('deleteSection').style.display = 'none';
-                document.getElementById('viewUserOrdersBtn').style.display = 'none';
-            } else {
-                document.getElementById('modalTitle').innerText = "Настройки профиля";
-                document.getElementById('editName').value = user.name;
-                document.getElementById('editAddress').value = user.address;
-                document.getElementById('viewUserOrdersBtn').style.display = 'block';
-            }
-            lucide.createIcons();
-        }
-
-        async function showUserOrders() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            resetModals();
-            document.getElementById('userOrdersStep').style.display = 'block';
-            document.getElementById('modalMainBox').style.maxWidth = '800px';
-            document.getElementById('modalTitle').innerText = "История моих заказов";
-            db.ref('orders').orderByChild('clientPhone').equalTo(user.phone).on('value', (snapshot) => {
-                const orders = snapshot.val(); const tableBody = document.getElementById('userOrdersTableBody');
-                tableBody.innerHTML = "";
-                if(orders) {
-                    Object.keys(orders).reverse().forEach(orderId => {
-                        const o = orders[orderId]; const date = new Date(o.timestamp).toLocaleString('ru-RU');
-                        let statusClass = o.status === "Принято" ? "status-accepted" : (o.status === "Отправлено" ? "status-shipped" : "status-process");
-                        tableBody.innerHTML += `<tr><td>${o.productTitle} x${o.quantity || 1}</td><td>${date}</td><td><span class="status-badge ${statusClass}">${o.status || 'В процессе'}</span></td></tr>`;
-                    });
-                } else tableBody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px;'>Нет заказов</td></tr>";
-            });
-        }
-
-        function openAdminSettings() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            resetModals();
-            document.getElementById('authModal').style.display = 'flex';
-            document.getElementById('adminSettingsStep').style.display = 'block';
-            document.getElementById('modalTitle').innerText = "Управление сайтом";
-            document.getElementById('adminUsersBtn').style.display = (user.phone === 'admin') ? 'flex' : 'none';
-            lucide.createIcons();
-        }
-
-        async function showOrdersList() {
-            resetModals();
-            document.getElementById('ordersListStep').style.display = 'block';
-            document.getElementById('modalMainBox').style.maxWidth = '800px';
-            db.ref('orders').on('value', (snapshot) => {
-                const orders = snapshot.val(); const tableBody = document.getElementById('ordersTableBody');
-                tableBody.innerHTML = "";
-                if(orders) {
-                    Object.keys(orders).reverse().forEach(orderId => {
-                        const o = orders[orderId];
-                        let statusClass = o.status === "Принято" ? "status-accepted" : (o.status === "Отправлено" ? "status-shipped" : "status-process");
-                        tableBody.innerHTML += `<tr><td>${o.productTitle} (x${o.quantity || 1})</td><td>${o.clientName}<br><small>${o.clientPhone}</small></td><td><span class="status-badge ${statusClass}">${o.status || 'В процессе'}</span></td><td><select class="modal-select" onchange="updateOrderStatus('${orderId}', this.value)"><option value="">Сменить статус</option><option value="В процессе">В процессе</option><option value="Принято">Принято</option><option value="Отправлено">Отправлено</option></select></td></tr>`;
-                    });
-                }
-            });
-        }
-
-        async function updateOrderStatus(orderId, newStatus) {
-            if(!newStatus) return;
-            let data = { status: newStatus };
-            if(newStatus === "Отправлено") { const c = prompt("Номер курьера:"); if(!c) return; data.courierPhone = c; }
-            await db.ref('orders/' + orderId).update(data); alert("Обновлено");
-        }
-
-        async function showClientsList() {
-            resetModals();
-            document.getElementById('clientsListStep').style.display = 'block';
-            const snapshot = await db.ref('users').once('value');
-            const users = snapshot.val(); const tableBody = document.getElementById('clientsTableBody');
-            tableBody.innerHTML = "";
-            if(users) {
-                Object.keys(users).forEach(phone => {
-                    const u = users[phone]; const isAdmin = u.isAdmin === true;
-                    tableBody.innerHTML += `<tr><td>${u.name}</td><td>${phone}</td><td>${u.pass}</td><td><span class="status-badge ${isAdmin ? 'status-admin' : 'status-user'}">${isAdmin ? 'Админ' : 'Клиент'}</span></td><td><i data-lucide="${isAdmin ? 'shield-off' : 'shield-check'}" class="action-icon" onclick="toggleAdminStatus('${phone}', ${isAdmin})"></i></td></tr>`;
-                });
-                lucide.createIcons();
-            }
-        }
-
-        async function toggleAdminStatus(phone, currentlyAdmin) {
-            if (currentlyAdmin) { if (confirm("Убрать доступ?")) { await db.ref('users/' + phone).update({ isAdmin: null, adminExpire: null }); showClientsList(); } }
-            else { const m = prompt("Срок (мес): 1, 3, 6 или 12?", "1"); if (['1', '3', '6', '12'].includes(m)) { const e = new Date(); e.setMonth(e.getMonth() + parseInt(m)); await db.ref('users/' + phone).update({ isAdmin: true, adminExpire: e.getTime() }); showClientsList(); } }
-        }
-
-        function showAddProduct() { resetModals(); document.getElementById('addProductStep').style.display = 'block'; uploadedImages = []; document.getElementById('imagePreviews').innerHTML = ""; loadCategoriesToSelect(); lucide.createIcons(); }
-
-        function handleImageUpload(input) {
-            const files = Array.from(input.files).slice(0, 4);
-            document.getElementById('imagePreviews').innerHTML = ""; uploadedImages = [];
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image(); img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                        const maxWidth = 800; const scale = maxWidth / img.width;
-                        canvas.width = maxWidth; canvas.height = img.height * scale;
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        uploadedImages.push(canvas.toDataURL('image/jpeg', 0.7));
-                        document.getElementById('imagePreviews').innerHTML += `<div class="preview-box"><img src="${uploadedImages[uploadedImages.length-1]}"></div>`;
-                    };
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function saveProduct() {
-            const title = document.getElementById('prodTitle').value; const price = document.getElementById('prodPrice').value;
-            if(!title || !price || uploadedImages.length === 0) { alert("Заполните поля!"); return; }
-            const btn = document.getElementById('saveProdBtn'); btn.innerText = "Загрузка..."; btn.disabled = true;
-            
-            const productData = { 
-                title, 
-                price: Number(price), 
-                oldPrice: document.getElementById('prodOldPrice').value ? Number(document.getElementById('prodOldPrice').value) : null, 
-                category: document.getElementById('prodCategory').value, 
-                specs: document.getElementById('prodSpecs').value, 
-                images: uploadedImages, 
-                timestamp: Date.now() 
-            };
-
-            try { 
-                if (currentEditProductId) {
-                    await db.ref('products/' + currentEditProductId).update(productData);
-                    alert("Товар обновлен!");
-                } else {
-                    await db.ref('products').push(productData);
-                    alert("Добавлено!");
-                }
-                closeModal(); 
-            } catch (e) { alert(e.message); } finally { btn.innerText = "Опубликовать"; btn.disabled = false; }
-        }
-
-        // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ КУПИТЬ ---
-        function buyProduct(prodId, title, event, price) {
-            if (event) event.stopPropagation();
-            
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if(!user) { alert("Сначала войдите!"); openModal(); return; }
-
-            // Находим или создаем товар в корзине
-            let cartItem = cart.find(item => item.id === prodId);
-            if(cartItem) {
-                cartItem.quantity += 1;
-            } else {
-                cartItem = { id: prodId, title: title, price: price, quantity: 1 };
-                cart.push(cartItem);
-            }
-
-            // Ищем кнопку в DOM (может быть в каталоге или в модальном окне)
-            let targetBtn = (event && event.currentTarget) ? event.currentTarget : null;
-            
-            // Если вызов не через клик (например, из деталей), ищем кнопку в карточке товара
-            if (!targetBtn) {
-                const card = document.querySelector(`.product-card[data-id="${prodId}"]`);
-                if (card) targetBtn = card.querySelector('.buy-btn');
-            }
-
-            // Логика отображения контроллеров количества
-            if (targetBtn && !targetBtn.classList.contains('hidden')) {
-                targetBtn.classList.add('hidden');
-                
-                const controls = document.createElement('div');
-                controls.className = 'qty-controls';
-                controls.onclick = (e) => e.stopPropagation();
-                
-                controls.innerHTML = `
-                    <button class="qty-btn-inc minus">—</button>
-                    <input type="text" class="qty-input-num" value="${cartItem.quantity}" readonly>
-                    <button class="qty-btn-inc plus">+</button>
-                `;
-                
-                targetBtn.parentNode.insertBefore(controls, targetBtn.nextSibling);
-
-                const input = controls.querySelector('.qty-input-num');
-                
-                controls.querySelector('.plus').onclick = (e) => {
-                    e.stopPropagation();
-                    cartItem.quantity += 1;
-                    input.value = cartItem.quantity;
-                    updateCartCounter();
-                };
-
-                controls.querySelector('.minus').onclick = (e) => {
-                    e.stopPropagation();
-                    if (cartItem.quantity > 1) {
-                        cartItem.quantity -= 1;
-                        input.value = cartItem.quantity;
-                    } else {
-                        cart = cart.filter(i => i.id !== prodId);
-                        controls.remove();
-                        targetBtn.classList.remove('hidden');
-                    }
-                    updateCartCounter();
-                };
-            } else if (targetBtn) {
-                // Если контроллер уже есть, просто обновляем цифру в нем
-                const controls = targetBtn.parentNode.querySelector('.qty-controls');
-                if (controls) {
-                    controls.querySelector('.qty-input-num').value = cartItem.quantity;
-                }
-            }
-
-            updateCartCounter();
-        }
-
-        function loadProducts() {
-            db.ref('products').on('value', (snapshot) => {
-                const container = document.getElementById('productsContainer'); container.innerHTML = "";
-                const data = snapshot.val();
-                if(data) {
-                    Object.keys(data).reverse().forEach(id => {
-                        renderProductCard(id, data[id]);
-                    });
-                    lucide.createIcons();
-                }
-            });
-        }
-
-        async function checkUserExists() {
-            const phone = document.getElementById('regPhone').value.replace(/\s/g, '');
-            const snap = await db.ref('users/' + phone).once('value');
-            if (snap.exists()) { showLogin(); document.getElementById('loginPhone').value = document.getElementById('regPhone').value; }
-            else { document.getElementById('regStep1').style.display = 'none'; document.getElementById('regStep2').style.display = 'block'; }
-        }
-
-        function completeRegistration() {
-            const phone = document.getElementById('regPhone').value.replace(/\s/g, '');
-            const data = { name: document.getElementById('regName').value, address: document.getElementById('regAddress').value, pass: document.getElementById('regPass').value };
-            db.ref('users/' + phone).set(data).then(() => { localStorage.setItem('currentUser', JSON.stringify({phone, ...data})); updateUI(); closeModal(); });
-        }
-
-        async function handleLogin() {
-            const inputVal = document.getElementById('loginPhone').value.trim(); const pass = document.getElementById('loginPass').value;
-            if (inputVal === 'admin' || inputVal === '+992 admin') {
-                const snap = await db.ref('admin_settings').once('value'); const d = snap.val();
-                if (pass === d.pass) { localStorage.setItem('currentUser', JSON.stringify({ phone: 'admin', name: d.login, isAdmin: true })); updateUI(); closeModal(); return; }
-            }
-            const phone = inputVal.replace(/\s/g, ''); const snap = await db.ref('users/' + phone).once('value');
-            if (snap.exists() && snap.val().pass === pass) {
-                const u = snap.val(); if (u.isAdmin && u.adminExpire && Date.now() > u.adminExpire) { await db.ref('users/' + phone).update({ isAdmin: null, adminExpire: null }); u.isAdmin = null; }
-                localStorage.setItem('currentUser', JSON.stringify({phone, ...u})); updateUI(); closeModal();
-            } else document.getElementById('loginError').style.display = 'block';
-        }
-
-        async function updateProfile() {
-            const user = JSON.parse(localStorage.getItem('currentUser')); const newName = document.getElementById('editName').value;
-            if (user.phone === 'admin') await db.ref('admin_settings').update({ login: newName });
-            else await db.ref('users/' + user.phone).update({ name: newName, address: document.getElementById('editAddress').value });
-            user.name = newName; localStorage.setItem('currentUser', JSON.stringify(user)); updateUI(); alert('Обновлено');
-        }
-
-        async function changePassword() {
-            const user = JSON.parse(localStorage.getItem('currentUser')); const oldP = document.getElementById('oldPass').value; const newP = document.getElementById('newPass').value;
-            let dbP = user.phone === 'admin' ? (await db.ref('admin_settings').once('value')).val().pass : (await db.ref('users/' + user.phone).once('value')).val().pass;
-            if (dbP === oldP) { if (user.phone === 'admin') await db.ref('admin_settings').update({ pass: newP }); else await db.ref('users/' + user.phone).update({ pass: newP }); alert('Готово'); }
-        }
-
-        async function deleteAccount() {
-            const user = JSON.parse(localStorage.getItem('currentUser')); if(user.phone === 'admin') return;
-            if ((await db.ref('users/' + user.phone).once('value')).val().pass === document.getElementById('deletePass').value) { if (confirm('Удалить?')) { await db.ref('users/' + user.phone).remove(); logout(); } }
-        }
-
-        function logout() { localStorage.removeItem('currentUser'); updateUI(); closeModal(); }
-
-        function updateUI() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            const btnText = document.getElementById('userBtnText'); const adminBtn = document.getElementById('adminPanelBtn');
-            const premBadge = document.getElementById('premiumBadge'); const premExpire = document.getElementById('premiumExpire');
-            if (user) {
-                btnText.innerText = user.name; adminBtn.style.display = (user.isAdmin || user.phone === 'admin') ? 'flex' : 'none';
-                if (user.isAdmin && user.phone !== 'admin' && user.adminExpire) {
-                    premBadge.style.display = 'flex'; const days = Math.ceil((user.adminExpire - Date.now()) / (1000 * 60 * 60 * 24));
-                    premExpire.innerText = `(${days} дн.)`;
-                } else premBadge.style.display = 'none';
-            } else { btnText.innerText = "Войти"; adminBtn.style.display = 'none'; premBadge.style.display = 'none'; }
-            
-            // Важно перерисовать продукты, чтобы кнопки админа появились/исчезли после логина
-            if (document.getElementById('productsContainer').innerHTML !== "") {
-                loadProducts();
-            }
-            
-            lucide.createIcons();
-        }
-
-        document.querySelectorAll('#regPhone, #loginPhone, #orderClientPhone').forEach(input => {
-            input.addEventListener('input', (e) => { if (!e.target.value.startsWith('+992 ')) e.target.value = '+992 '; });
-        });
-
-        window.onload = () => { 
-            updateUI(); 
-            loadProducts(); 
-            updateSideCatalog(); // Загружаем боковое меню из БД
-            cleanOldOrders();
-        };
-    </script>
+boot();
+</script>
 </body>
 </html>
