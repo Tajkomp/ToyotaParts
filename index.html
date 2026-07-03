@@ -1594,7 +1594,7 @@ $('#coSubmitBtn').addEventListener('click', async ()=>{
     if(sellerId){
       const chatId = [State.user.docId, sellerId].sort().join('_');
       db.collection('chats').doc(chatId).collection('messages').add({
-        senderId: sellerId, text: 'Спасибо за заказ! 🙏 Пожалуйста, подождите немного, мы скоро свяжемся с вами.',
+        senderId: sellerId, text: 'Спасибо за заказ! 😊 Пожалуйста, подождите немного, мы скоро свяжемся с вами.',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }).catch(()=>{});
       db.collection('chats').doc(chatId).set({clientId: State.user.docId, sellerId, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true}).catch(()=>{});
